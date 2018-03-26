@@ -1,0 +1,24 @@
+{
+	"name": "webserver",
+	"version": "1.0.0",
+	"description": "A Node.js web server that coordinates all other systems of SexismDetector",
+	"main": "main.js",
+	"dependencies": {
+		"@types/node-fetch": "^1.6.7",
+		"node-fetch": "^2.1.1"
+	},
+	"devDependencies": {},
+	"scripts": {
+		"start": "node dist/main.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/sexismDetector/WebServer.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/sexismDetector/WebServer/issues"
+	},
+	"homepage": "https://github.com/sexismDetector/WebServer#readme"
+}
