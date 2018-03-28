@@ -1,11 +1,13 @@
+import TwitterDataService from "./Services/TwitterDataService";
+import TwitterAuth from "./Auth/TwitterAuth";
 
 
 class Main {
 
-    public async main(): Promise<void> {
-
+    public static async main(): Promise<void> {
+        const twitterData = new TwitterDataService(new TwitterAuth("", ""));
     }
 
 }
 
-new Main().main();
+Main.main();

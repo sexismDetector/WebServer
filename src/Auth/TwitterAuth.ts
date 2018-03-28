@@ -7,21 +7,26 @@ export default class TwitterAuth {
     private static get AuthURL(): string {
         return "https://api.twitter.com/oauth2/token/";
     }
+
     private clientKey: string;
     private clientSecret: string;
+
+    private accessToken: TwitterAccessToken | null;
 
     public constructor(clientKey: string, clientSecret: string) {
         this.clientKey = QueryString.escape(clientKey);
         this.clientSecret = QueryString.escape(clientSecret);
+        this.accessToken = null;
     }
 
     public async getToken(): Promise<TwitterAccessToken> {
-        const res: Response = await fetch(TwitterAuth.AuthURL, this.tokenOptions());
+        if (this.accessToken != null) return this.accessToken;
+        const res: Response = await fetch(TwitterAuth.AuthURL, this.TokenOptions);
         if (res.status != 200) throw new Error("Authentication Error");
-        return await res.json();
+        return this.accessToken = await res.json();
     }
 
-    private tokenOptions(): RequestInit {
+    private get TokenOptions(): RequestInit {
         const authorization = this.clientKey + ":" + this.clientSecret;
         const encodedAuthorization = Buffer.from(authorization).toString("base64");
         return {
