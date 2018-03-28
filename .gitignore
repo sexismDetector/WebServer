@@ -60,3 +60,6 @@ typings/
 
 # Jetbrains project data
 .idea/
+
+# Test files with credentials
+*.ignore.*
