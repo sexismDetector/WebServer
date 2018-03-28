@@ -4,12 +4,20 @@
 	"description": "A Node.js web server that coordinates all other systems of SexismDetector",
 	"main": "main.js",
 	"dependencies": {
+		"@types/fs-extra": "^5.0.1",
 		"@types/node-fetch": "^1.6.7",
+		"fs-extra": "^5.0.0",
 		"node-fetch": "^2.1.1"
 	},
-	"devDependencies": {},
+	"devDependencies": {
+		"@types/mocha": "^5.0.0",
+		"mocha": "^5.0.5",
+		"ts-node": "^5.0.1",
+		"typescript": "^2.8.1"
+	},
 	"scripts": {
-		"start": "node dist/main.js"
+		"start": "node dist/main.js",
+		"test": "./node_modules/.bin/mocha -r ts-node/register test/**/*.ts"
 	},
 	"repository": {
 		"type": "git",
