@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import * as FileSystem from "fs-extra"
+import * as FileSystem from "fs-extra";
 import TwitterDataService from "../src/Services/TwitterDataService";
 import TwitterAuth from "../src/Auth/TwitterAuth";
 
@@ -12,7 +12,6 @@ describe("TwitterDataServiceTest", () => {
         const promise = twitterData.getTweet(json["tweetId"]);
         const data = await promise;
         assert.notEqual(data, null);
-        return promise; // Rejected promises make Mocha's tests fail
     });
 
 });
