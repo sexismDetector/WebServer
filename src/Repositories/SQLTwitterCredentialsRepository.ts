@@ -1,17 +1,21 @@
-import ITwitterCredentialsRepository from "./ITwitterCredentialsRepository";
+import ITwitterCredentialsRepository from "../Interfaces/ITwitterCredentialsRepository";
 import TwitterCredentials from "../Models/TwitterCredentials";
 import PostgreSQLDriver from "../Databases/PostgreSQLDriver";
+import {inject, injectable} from "inversify";
+import IDatabaseDriver from "../Interfaces/IDatabaseDriver";
+import ObjectPool from "../Infrastructure/ObjectPool";
 
+@injectable()
 export default class SQLTwitterCredentialsRepository implements ITwitterCredentialsRepository {
 
-    public constructor() {
+    private driver: IDatabaseDriver;
 
+    public constructor(@inject(ObjectPool.Database) driver: IDatabaseDriver) {
+        this.driver = driver;
     }
 
-
     public async get(): Promise<TwitterCredentials> {
-        const driver = await PostgreSQLDriver.getInstance();
-        const result = await driver.read({
+        const result = await this.driver.read({
             select: ["key", "secret"],
             from: "TwitterCredentials",
             where: "true"

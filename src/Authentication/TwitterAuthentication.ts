@@ -1,8 +1,8 @@
 import fetch, {RequestInit, Response} from "node-fetch"
 import * as QueryString from "querystring";
-import TwitterAccessToken from "./TwitterAccessToken";
+import TwitterAccessToken from "../Models/TwitterAccessToken";
 
-export default class TwitterAuth {
+export default class TwitterAuthentication {
 
     private static get AuthURL(): string {
         return "https://api.twitter.com/oauth2/token/";
@@ -21,7 +21,7 @@ export default class TwitterAuth {
 
     public async getToken(): Promise<TwitterAccessToken> {
         if (this.accessToken != null) return this.accessToken;
-        const res: Response = await fetch(TwitterAuth.AuthURL, this.TokenOptions);
+        const res: Response = await fetch(TwitterAuthentication.AuthURL, this.TokenOptions);
         if (res.status != 200) throw new Error("Authentication Error");
         return this.accessToken = await res.json();
     }

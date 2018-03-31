@@ -1,4 +1,4 @@
-import SelectQuery from "./SelectQuery";
+import SelectQuery from "../Models/SelectQuery";
 
 export default interface IDatabaseDriver {
     read<T>(query: SelectQuery): Promise<T[]>;

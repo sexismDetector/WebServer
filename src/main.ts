@@ -1,14 +1,14 @@
-import TwitterDataService from "./Services/TwitterDataService";
-import TwitterAuth from "./Auth/TwitterAuth";
-import {Client, ClientConfig, QueryResult} from "pg";
-import * as FileSystem from "fs-extra";
-import TwitterCredentials from "./Models/TwitterCredentials";
-import SQLTwitterCredentialsRepository from "./Repositories/SQLTwitterCredentialsRepository";
+import container from "./Infrastructure/Installer";
+import ITwitterCredentialsRepository from "./Interfaces/ITwitterCredentialsRepository";
+import ObjectPool from "./Infrastructure/ObjectPool";
+
 
 class Main {
 
     public static async main(): Promise<void> {
-
+        const tCredentialsRepo = container.get<ITwitterCredentialsRepository>(ObjectPool.TwitterCredentialRepo);
+        const credentials = await tCredentialsRepo.get();
+        console.log(credentials);
     }
 
 }

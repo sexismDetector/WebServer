@@ -1,5 +1,5 @@
 import fetch, {RequestInit, Response} from "node-fetch"
-import TwitterAuth from "../Auth/TwitterAuth";
+import TwitterAuthentication from "../Authentication/TwitterAuthentication";
 
 export default class TwitterDataService {
 
@@ -7,9 +7,9 @@ export default class TwitterDataService {
         return "https://api.twitter.com/1.1/"
     }
 
-    private auth: TwitterAuth;
+    private auth: TwitterAuthentication;
 
-    public constructor(auth: TwitterAuth) {
+    public constructor(auth: TwitterAuthentication) {
         this.auth = auth;
     }
 

@@ -7,9 +7,15 @@
 		"sourceMap": true,
 		"outDir": "dist/",
 		"noEmitOnError": true,
+		"types": [
+			"reflect-metadata"
+		],
 		"lib": [
 			"es2015"
-		]
+		],
+		"moduleResolution": "node",
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true
 	},
 	"include": [
 		"src/**/*"

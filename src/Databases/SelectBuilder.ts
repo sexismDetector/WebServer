@@ -1,8 +1,8 @@
-import {Client} from "pg";
+import {Client, PoolClient} from "pg";
 
 export default class SelectBuilder {
 
-    private client: Client;
+    private client: Client | PoolClient;
 
     private counter: number;
     private query: string;
@@ -10,7 +10,7 @@ export default class SelectBuilder {
     private table: string;
     private condition: string;
 
-    public constructor(client: Client) {
+    public constructor(client: Client | PoolClient) {
         this.client = client;
         this.counter = 1;
         this.query = SelectBuilder.RawSelect;
