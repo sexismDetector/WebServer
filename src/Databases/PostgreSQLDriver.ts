@@ -4,6 +4,8 @@ import {ClientConfig, Pool, PoolClient} from "pg";
 import * as FileSystem from "fs-extra";
 import SelectBuilder from "./SelectBuilder";
 import {injectable} from "inversify";
+import InsertQuery from "../Models/InsertQuery";
+import InsertBuilder from "./InsertBuilder";
 
 @injectable()
 export default class PostgreSQLDriver implements IDatabaseDriver {
@@ -37,9 +39,14 @@ export default class PostgreSQLDriver implements IDatabaseDriver {
 
     }
 
-    public async write(): Promise<void> {
-
+    public async write(query: InsertQuery): Promise<void> {
+        const client: PoolClient = await this.getClient();
+        const result: Promise<void> = new InsertBuilder(client)
+            .into(query.into)
+            .columns(query.columns)
+            .values(query.values)
+        .execute();
+        await result;
     }
-
 
 }

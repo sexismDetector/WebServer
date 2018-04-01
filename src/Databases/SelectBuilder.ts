@@ -1,25 +1,21 @@
 import {Client, PoolClient} from "pg";
+import AbstractQuery from "./AbstractQuery";
 
-export default class SelectBuilder {
+export default class SelectBuilder extends AbstractQuery<any[]> {
 
-    private client: Client | PoolClient;
-
-    private counter: number;
-    private query: string;
     private columns: string[];
     private table: string;
     private condition: string;
 
-    public constructor(client: Client | PoolClient) {
-        this.client = client;
-        this.counter = 1;
-        this.query = SelectBuilder.RawSelect;
+    public constructor(client: PoolClient) {
+        super(client);
         this.columns = [];
         this.table = this.condition = "";
     }
 
     public select(columns: string[]): SelectBuilder {
-        const columnString = this.parenthesisBuilder(this.columns = columns);
+        this.columns = columns
+        const columnString = this.parenthesisBuilder(columns);
         this.query = this.query.replace("@(x)", columnString);
         return this;
     }
@@ -38,26 +34,12 @@ export default class SelectBuilder {
 
     public async execute(): Promise<any[]> {
         const array = this.columns;
-            //.concat(this.table)
-            //.concat(this.condition);
+        //.concat(this.table)
+        //.concat(this.condition);
         return (await this.client.query(this.query)).rows;
     }
 
-    private parenthesisBuilder(values: string[]): string {
-        let columnString = "(";
-        for (let i = 0; i < values.length; i++) {
-            columnString += values[i];//this.NextParameter;
-            if (i < values.length - 1) columnString += ", ";
-        }
-        columnString += ")";
-        return columnString;
-    }
-
-    private get NextParameter(): string {
-        return "$" + this.counter++;
-    }
-
-    private static get RawSelect(): string {
+    protected getRawQuery(): string {
         return "Select @(x) From @(y) Where @(z);";
     }
 

@@ -4,7 +4,6 @@ import TwitterDataService from "../src/Services/TwitterDataService";
 import TwitterAuthentication from "../src/Authentication/TwitterAuthentication";
 import "mocha";
 
-
 describe("TwitterDataServiceTest", () => {
 
     it("Get Tweet by ID", async () => {
@@ -12,6 +11,7 @@ describe("TwitterDataServiceTest", () => {
         const twitterData = new TwitterDataService(new TwitterAuthentication(json["key"], json["secret"]));
         const promise = twitterData.getTweet(json["tweetId"]);
         const data = await promise;
+        console.log(data);
         assert.notEqual(data, null);
     });
 
