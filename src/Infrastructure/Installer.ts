@@ -5,6 +5,8 @@ import SQLTwitterCredentialsRepository from "../Repositories/SQLTwitterCredentia
 import ObjectPool from "./ObjectPool";
 import IDatabaseDriver from "../Interfaces/IDatabaseDriver";
 import PostgreSQLDriver from "../Databases/PostgreSQLDriver";
+import ITweetRepository from "../Interfaces/ITweetRepository";
+import TweetRepository from "../Repositories/TweetRepository";
 
 let container = new Container();
 
@@ -15,5 +17,9 @@ container
 container
     .bind<IDatabaseDriver>(ObjectPool.Database)
     .to(PostgreSQLDriver);
+
+container
+    .bind<ITweetRepository>(ObjectPool.TweetRepository)
+    .to(TweetRepository);
 
 export default container;

@@ -27,6 +27,14 @@ export default abstract class AbstractQuery<T> implements QueryBuilder<T> {
         return columnString;
     }
 
+    protected quotationMarks(value: string): string {
+        return `'${value}'`;
+    }
+
+    protected doubleQuotationMarks(value: string): string {
+        return `"${value}"`;
+    }
+
     public abstract execute(): Promise<T>;
 
     protected abstract getRawQuery(): string;

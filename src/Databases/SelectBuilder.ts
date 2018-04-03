@@ -1,4 +1,4 @@
-import {Client, PoolClient} from "pg";
+import {PoolClient} from "pg";
 import AbstractQuery from "./AbstractQuery";
 
 export default class SelectBuilder extends AbstractQuery<any[]> {
@@ -14,21 +14,23 @@ export default class SelectBuilder extends AbstractQuery<any[]> {
     }
 
     public select(columns: string[]): SelectBuilder {
-        this.columns = columns
-        const columnString = this.parenthesisBuilder(columns);
+        this.columns = columns;
+        let columnString: string;
+        if (this.selectAllColumns(this.columns)) columnString = "*";
+        else columnString = this.parenthesisBuilder(this.columns);
         this.query = this.query.replace("@(x)", columnString);
         return this;
     }
 
     public from(table: string): SelectBuilder {
-        this.table = table;
-        this.query = this.query.replace("@(y)", table);
+        this.table = this.doubleQuotationMarks(table);
+        this.query = this.query.replace("@(y)", this.table);
         return this;
     }
 
     public where(condition: string): SelectBuilder {
         this.condition = condition;
-        this.query = this.query.replace("@(z)", condition);
+        this.query = this.query.replace("@(z)", this.condition);
         return this;
     }
 
@@ -41,6 +43,10 @@ export default class SelectBuilder extends AbstractQuery<any[]> {
 
     protected getRawQuery(): string {
         return "Select @(x) From @(y) Where @(z);";
+    }
+
+    private selectAllColumns(columns: string[]): boolean {
+        return columns.length == 1 && columns[0] == "*";
     }
 
 }
