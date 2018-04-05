@@ -1,8 +1,11 @@
 import fetch, {RequestInit, Response} from "node-fetch"
 import TwitterAuthentication from "../Authentication/TwitterAuthentication";
 import Tweet from "../Models/Tweet";
+import {Semaphore} from "await-semaphore";
 
 export default class TwitterDataService {
+
+    private semaphore: Semaphore;
 
     private static get BaseURL(): string {
         return "https://api.twitter.com/1.1/"
@@ -12,15 +15,27 @@ export default class TwitterDataService {
 
     public constructor(auth: TwitterAuthentication) {
         this.auth = auth;
+        this.semaphore = new Semaphore(50);
     }
 
     public async getTweet(id: string): Promise<Tweet> {
         const options = this.getTweetOptions();
-        let url: string = TwitterDataService.BaseURL;
-        url += "statuses/show.json?id=" + id; //Change to URL build class
+        const url = this.getByIdUrl(id);
+        const release: () => void = await this.semaphore.acquire()
         const res: Response = await fetch(url, await options);
-        if (res.status != 200) throw new Error("Id does not exist");
+        release();
+        if (!res.ok) throw new Error(res.status.toString());
         const rawTweet: any = await res.json();
+        return this.formatTweet(rawTweet);
+    }
+
+    private getByIdUrl(id: string): string {
+        let url =  TwitterDataService.BaseURL;
+        url += "statuses/show.json?id=" + id; //Change to URL build class
+        return url;
+    }
+
+    private formatTweet(rawTweet: any): Tweet {
         return {
             id: rawTweet.id_str,
             hashtags: rawTweet.entities.hashtags,
@@ -29,14 +44,13 @@ export default class TwitterDataService {
             user_id: rawTweet.user.id_str,
             reply_status_id: rawTweet.in_reply_to_status_id_str,
             user_mentions: rawTweet.entities.user_mentions
-        }
+        };
     }
 
     private async getTweetOptions(): Promise<RequestInit> {
-        const token = this.auth.getToken();
         return {
             headers: {
-                "Authorization": "Bearer " + (await token).access_token,
+                "Authorization": "Bearer " + (await this.auth.getToken()).access_token,
                 "Content-Type": "application/json",
             },
             method: "GET",

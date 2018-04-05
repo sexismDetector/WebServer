@@ -1,4 +1,4 @@
-import QueryBuilder from "./QueryBuilder";
+
 import {PoolClient} from "pg";
 import AbstractQuery from "./AbstractQuery";
 
@@ -29,6 +29,10 @@ export default class InsertBuilder extends AbstractQuery<void> {
     }
 
     public values(values: any[]): InsertBuilder {
+        values.forEach(val => {
+           if (Array.isArray(val)) return val.join(",");
+           return val;
+        });
         this.rawValues = values.map(this.quotationMarks);
         const valueString = this.parenthesisBuilder(this.rawValues);
         this.query = this.query.replace("@(z)", valueString);

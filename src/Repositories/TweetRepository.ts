@@ -22,7 +22,7 @@ export default class TweetRepository implements ITweetRepository {
     }
 
     public async get(id: string): Promise<Tweet> {
-        const result: any[] = await this.database.read({
+        const result = await this.database.read<Tweet>({
             select: ["*"],
             from: "Tweets",
             where: `id = '${id}'`
@@ -31,7 +31,7 @@ export default class TweetRepository implements ITweetRepository {
     }
 
     public async getAll(): Promise<Tweet[]> {
-        const result: any[] = await this.database.read({
+        const result = await this.database.read<Tweet>({
             select: ["*"],
             from: "Tweets",
             where: "true"
