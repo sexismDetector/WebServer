@@ -28,6 +28,7 @@ export default class PostgreSQLDriver implements IDatabaseDriver {
             .from(query.from)
             .where(query.where)
         .execute();
+        client.release();
         return await result;
     }
 
@@ -46,6 +47,7 @@ export default class PostgreSQLDriver implements IDatabaseDriver {
             .columns(query.columns)
             .values(query.values)
         .execute();
+        client.release();
         await result;
     }
 

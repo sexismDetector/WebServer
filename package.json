@@ -12,7 +12,8 @@
 		"inversify": "^4.11.1",
 		"node-fetch": "^2.1.1",
 		"pg": "^7.4.1",
-		"reflect-metadata": "^0.1.12"
+		"reflect-metadata": "^0.1.12",
+		"sql-escape": "^1.0.1"
 	},
 	"devDependencies": {
 		"@types/mocha": "^5.0.0",

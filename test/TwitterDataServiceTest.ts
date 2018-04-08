@@ -4,7 +4,7 @@ import TwitterDataService from "../src/Services/TwitterDataService";
 import TwitterAuthentication from "../src/Authentication/TwitterAuthentication";
 import "mocha";
 import ITwitterCredentialsRepository from "../src/Interfaces/ITwitterCredentialsRepository";
-import ObjectPool from "../src/Infrastructure/ObjectPool";
+import Component from "../src/Infrastructure/Component";
 import container from "../src/Infrastructure/Installer";
 
 describe("TwitterDataServiceTest", () => {
@@ -12,7 +12,7 @@ describe("TwitterDataServiceTest", () => {
     let repo: ITwitterCredentialsRepository;
 
     before(() => {
-        repo = container.get<ITwitterCredentialsRepository>(ObjectPool.TwitterCredentialRepo);
+        repo = container.get<ITwitterCredentialsRepository>(Component.TwitterCredentialRepo);
     });
 
     it("Get Tweet by ID", async () => {

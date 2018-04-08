@@ -3,14 +3,14 @@ import TwitterCredentials from "../Models/TwitterCredentials";
 import PostgreSQLDriver from "../Databases/PostgreSQLDriver";
 import {inject, injectable} from "inversify";
 import IDatabaseDriver from "../Interfaces/IDatabaseDriver";
-import ObjectPool from "../Infrastructure/ObjectPool";
+import Component from "../Infrastructure/Component";
 
 @injectable()
 export default class SQLTwitterCredentialsRepository implements ITwitterCredentialsRepository {
 
     private driver: IDatabaseDriver;
 
-    public constructor(@inject(ObjectPool.Database) driver: IDatabaseDriver) {
+    public constructor(@inject(Component.Database) driver: IDatabaseDriver) {
         this.driver = driver;
     }
 

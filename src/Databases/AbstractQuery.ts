@@ -18,13 +18,11 @@ export default abstract class AbstractQuery<T> implements QueryBuilder<T> {
     }
 
     protected parenthesisBuilder(values: string[]): string {
-        let columnString = "(";
-        for (let i = 0; i < values.length; i++) {
-            columnString += values[i];//this.NextParameter;
-            if (i < values.length - 1) columnString += ", ";
-        }
-        columnString += ")";
-        return columnString;
+        return this.parenthesisGenericBuilder(values, val => val);
+    }
+
+    protected parameterBuilder(values: string[]) {
+        return this.parenthesisGenericBuilder(values, val => this.NextParameter);
     }
 
     protected quotationMarks(value: string): string {
@@ -39,5 +37,14 @@ export default abstract class AbstractQuery<T> implements QueryBuilder<T> {
 
     protected abstract getRawQuery(): string;
 
+    private parenthesisGenericBuilder(values: string[], action: (val: string) => string) {
+        let columnString = "(";
+        for (let i = 0; i < values.length; i++) {
+            columnString += action(values[i]);
+            if (i < values.length - 1) columnString += ", ";
+        }
+        columnString += ")";
+        return columnString;
+    }
 }
 

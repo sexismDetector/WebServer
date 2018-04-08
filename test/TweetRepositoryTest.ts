@@ -1,6 +1,6 @@
 import ITweetRepository from "../src/Interfaces/ITweetRepository";
 import container from "../src/Infrastructure/Installer";
-import ObjectPool from "../src/Infrastructure/ObjectPool";
+import Component from "../src/Infrastructure/Component";
 import * as assert from "assert";
 import "mocha";
 
@@ -9,7 +9,7 @@ describe("TweetRespositoryTest", () => {
     let repo: ITweetRepository;
 
     before(() => {
-        repo = container.get<ITweetRepository>(ObjectPool.TweetRepository);
+        repo = container.get<ITweetRepository>(Component.TweetRepository);
     });
 
     it("Create a Tweet", async () => {

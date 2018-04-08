@@ -2,10 +2,14 @@ import fetch, {RequestInit, Response} from "node-fetch"
 import TwitterAuthentication from "../Authentication/TwitterAuthentication";
 import Tweet from "../Models/Tweet";
 import {Semaphore} from "await-semaphore";
+import ITwitterDataService from "../Interfaces/ITwitterDataService";
+import {inject, injectable} from "inversify";
+import Component from "../Infrastructure/Component";
 
-export default class TwitterDataService {
+@injectable()
+export default class TwitterDataService implements ITwitterDataService {
 
-    private semaphore: Semaphore;
+    //private semaphore: Semaphore;
 
     private static get BaseURL(): string {
         return "https://api.twitter.com/1.1/"
@@ -13,17 +17,19 @@ export default class TwitterDataService {
 
     private auth: TwitterAuthentication;
 
-    public constructor(auth: TwitterAuthentication) {
+    public constructor(
+        @inject(Component.TwitterAuth) auth: TwitterAuthentication
+    ) {
         this.auth = auth;
-        this.semaphore = new Semaphore(50);
+        //this.semaphore = new Semaphore(50);
     }
 
     public async getTweet(id: string): Promise<Tweet> {
         const options = this.getTweetOptions();
         const url = this.getByIdUrl(id);
-        const release: () => void = await this.semaphore.acquire()
+        //const release: () => void = await this.semaphore.acquire();
         const res: Response = await fetch(url, await options);
-        release();
+        //release();
         if (!res.ok) throw new Error(res.status.toString());
         const rawTweet: any = await res.json();
         return this.formatTweet(rawTweet);
@@ -40,7 +46,6 @@ export default class TwitterDataService {
             id: rawTweet.id_str,
             hashtags: rawTweet.entities.hashtags,
             text: rawTweet.text,
-            source: rawTweet.source,
             user_id: rawTweet.user.id_str,
             reply_status_id: rawTweet.in_reply_to_status_id_str,
             user_mentions: rawTweet.entities.user_mentions

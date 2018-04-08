@@ -33,14 +33,15 @@ export default class InsertBuilder extends AbstractQuery<void> {
            if (Array.isArray(val)) return val.join(",");
            return val;
         });
-        this.rawValues = values.map(this.quotationMarks);
-        const valueString = this.parenthesisBuilder(this.rawValues);
+        this.rawValues = values;
+        const valueString = this.parameterBuilder(this.rawValues);
         this.query = this.query.replace("@(z)", valueString);
         return this;
     }
 
     public async execute(): Promise<void> {
-        await this.client.query(this.query);
+        this.query = this.query.replace(new RegExp("\'", "g"), "''");
+        await this.client.query(this.query, this.rawValues);
     }
 
     protected getRawQuery(): string {

@@ -2,14 +2,14 @@ import ITweetRepository from "../Interfaces/ITweetRepository";
 import Tweet from "../Models/Tweet";
 import {inject, injectable} from "inversify";
 import IDatabaseDriver from "../Interfaces/IDatabaseDriver";
-import ObjectPool from "../Infrastructure/ObjectPool";
+import Component from "../Infrastructure/Component";
 
 @injectable()
 export default class TweetRepository implements ITweetRepository {
 
     private database: IDatabaseDriver;
 
-    public constructor(@inject(ObjectPool.Database) database: IDatabaseDriver) {
+    public constructor(@inject(Component.Database) database: IDatabaseDriver) {
         this.database = database;
     }
 

@@ -38,7 +38,8 @@ export default class SelectBuilder extends AbstractQuery<any[]> {
         const array = this.columns;
         //.concat(this.table)
         //.concat(this.condition);
-        return (await this.client.query(this.query)).rows;
+        const result = await this.client.query(this.query);
+        return result.rows;
     }
 
     protected getRawQuery(): string {
