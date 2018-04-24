@@ -11,8 +11,8 @@ describe("TwitterDataServiceTest", () => {
 
     let repo: ITwitterCredentialsRepository;
 
-    before(() => {
-        repo = container.get<ITwitterCredentialsRepository>(Component.TwitterCredentialRepo);
+    before(async () => {
+        repo = (await container).get<ITwitterCredentialsRepository>(Component.TwitterCredentialRepo);
     });
 
     it("Get Tweet by ID", async () => {

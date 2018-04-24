@@ -44,7 +44,6 @@ export default class TweetCrawlService implements ITweetCrawlService {
         }, 1000 * 30);
     }
 
-
     private async getLabeledTweets(): Promise<TweetLabel[]> {
         const dataset: Buffer = await FileSystem.readFile(__dirname + "/../../res/twitterDataset.csv");
         const rows: string[] = dataset.toString().split("\n");
@@ -93,4 +92,5 @@ export default class TweetCrawlService implements ITweetCrawlService {
         }
         return result;
     }
+
 }

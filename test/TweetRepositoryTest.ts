@@ -8,8 +8,8 @@ describe("TweetRespositoryTest", () => {
 
     let repo: ITweetRepository;
 
-    before(() => {
-        repo = container.get<ITweetRepository>(Component.TweetRepository);
+    before(async () => {
+        repo = (await container).get<ITweetRepository>(Component.TweetRepository);
     });
 
     it("Create a Tweet", async () => {

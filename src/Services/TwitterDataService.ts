@@ -1,10 +1,10 @@
 import fetch, {RequestInit, Response} from "node-fetch"
 import TwitterAuthentication from "../Authentication/TwitterAuthentication";
 import Tweet from "../Models/Tweet";
-import {Semaphore} from "await-semaphore";
 import ITwitterDataService from "../Interfaces/ITwitterDataService";
 import {inject, injectable} from "inversify";
 import Component from "../Infrastructure/Component";
+import NotImplementedError from "../Errors/NotImplementedError";
 
 @injectable()
 export default class TwitterDataService implements ITwitterDataService {
@@ -33,6 +33,10 @@ export default class TwitterDataService implements ITwitterDataService {
         if (!res.ok) throw new Error(res.status.toString());
         const rawTweet: any = await res.json();
         return this.formatTweet(rawTweet);
+    }
+
+    public async getFollowers(userId: string): Promise<String[]> {
+        throw new NotImplementedError();
     }
 
     private getByIdUrl(id: string): string {
