@@ -13,6 +13,10 @@ export default class TweetRepository implements ITweetRepository {
         this.database = database;
     }
 
+    public get PoolSize(): number {
+        return this.database.PoolSize;
+    }
+
     public async create(tweet: Tweet): Promise<void> {
         await this.database.write({
             into: "Tweets",

@@ -12,10 +12,17 @@ import TwitterDataService from "../Services/TwitterDataService";
 import TwitterAuthentication from "../Authentication/TwitterAuthentication";
 import TweetCrawlService from "../Services/TweetCrawlService";
 import ITweetCrawlService from "../Interfaces/ITweetCrawlService";
+import CSVLoaderService from "../Services/CSVLoaderService";
+import JSONLoaderService from "../Services/JSONLoaderService";
+import ILabeledWordRepository from "../Interfaces/ILabeledWordRepository";
+import LabeledWordRepository from "../Repositories/LabeledWordRepository";
 
 let container = new Container();
 
 async function prepareContainer(container: Container): Promise<Container> {
+
+    console.log("Preparing Components...");
+
     container
         .bind<ITwitterCredentialsRepository>(Component.TwitterCredentialRepo)
         .to(SQLTwitterCredentialsRepository);
@@ -27,6 +34,9 @@ async function prepareContainer(container: Container): Promise<Container> {
     container
         .bind<ITweetRepository>(Component.TweetRepository)
         .to(TweetRepository);
+
+    container.bind<ILabeledWordRepository>(Component.LabeledWordRepository)
+        .to(LabeledWordRepository);
 
     container
         .bind<ITwitterDataService>(Component.TwitterDataService)
@@ -45,6 +55,15 @@ async function prepareContainer(container: Container): Promise<Container> {
 
     container.bind<TwitterAuthentication>(Component.TwitterAuth)
         .toConstantValue(twitterAuth);
+
+    container.bind<CSVLoaderService>(Component.CSVLoaderService)
+        .to(CSVLoaderService);
+
+    container.bind<JSONLoaderService>(Component.JSONLoaderService)
+        .to(JSONLoaderService);
+
+    console.log("Components Prepared!");
+
     return container;
 }
 

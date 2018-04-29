@@ -32,11 +32,11 @@ export default class TweetCrawlService implements ITweetCrawlService {
                 try {
                     const tweet = await this.twitterService.getTweet(id);
                     console.log(tweet.user_id);
-                    await this.storeTweet(tweet, tweetLabel)
+                    await this.storeTweet(tweet, tweetLabel);
                 } catch (err) {
                     const error = err as Error;
                     console.log(error.message);
-                    if (error.message == "429") return false;
+                    if (error.message == "429") return false; // Twitter API is rejecting too many connections
                 }
                 console.log("Processed Tweets: " + ++this.count);
             }
