@@ -6,39 +6,55 @@ import ITwitterDataService from "../Interfaces/ITwitterDataService";
 import {inject, injectable} from "inversify";
 import Component from "../Infrastructure/Component";
 import ITweetCrawlService from "../Interfaces/ITweetCrawlService";
+import ITwitterUserRepository from "../Interfaces/ITwitterUserRepository";
 
 @injectable()
 export default class TweetCrawlService implements ITweetCrawlService {
 
     private count: number;
     private tweetRepo: ITweetRepository;
+    private userRepo: ITwitterUserRepository;
     private twitterService: ITwitterDataService;
 
     public constructor(
         @inject(Component.TweetRepository) tweetRepo: ITweetRepository,
+        @inject(Component.TwitterUserRepository) userRepo: ITwitterUserRepository,
         @inject(Component.TwitterDataService) twitterService: ITwitterDataService
     ) {
         this.tweetRepo = tweetRepo;
         this.twitterService = twitterService;
+        this.userRepo = userRepo;
         this.count = 0;
     }
 
     public async getAll(): Promise<void> {
         const labeledTweets = await this.getLabeledTweets();
-        const separatedTweets: string[][] = this.splitJobs(labeledTweets, 25);
+        const separatedTweets: TweetLabel[][] = this.splitJobs(labeledTweets, 25);
         this.processJobs(separatedTweets, async tweetLabels => {
             for (let tweetLabel of tweetLabels) {
                 const id: string = tweetLabel.id;
-                try {
+                if (! await this.twitterExceptions(async () => {
                     const tweet = await this.twitterService.getTweet(id);
                     console.log(tweet.user_id);
                     await this.storeTweet(tweet, tweetLabel);
-                } catch (err) {
-                    const error = err as Error;
-                    console.log(error.message);
-                    if (error.message == "429") return false; // Twitter API is rejecting too many connections
-                }
+                })) return false;
                 console.log("Processed Tweets: " + ++this.count);
+            }
+            return true;
+        }, 1000 * 30);
+    }
+
+    public async storeUsers(): Promise<void> {
+        const userIds = await this.tweetRepo.getAllUserId();
+        console.log(userIds.length);
+        const separatedIds: string[][] = this.splitJobs(userIds, 25);
+        this.processJobs(separatedIds, async (values) => {
+            for (let id of values) {
+                if (! await this.twitterExceptions(async () => {
+                    const user = await this.twitterService.getUser(id);
+                    await this.userRepo.create(user);
+                })) return false;
+                console.log("Processed Users: " + ++this.count);
             }
             return true;
         }, 1000 * 30);
@@ -69,14 +85,19 @@ export default class TweetCrawlService implements ITweetCrawlService {
         }
     }
 
-    private async processJobs(values: any[][], action: (values: any[]) => Promise<boolean>, delay: number) {
-        let i = 0;
-        const jobSetCount = values.length;
-        const id = setInterval(async() => {
-            if (i == jobSetCount) clearInterval(id);
+    private async processJobs<T>(values: T[][], action: (values: T[]) => Promise<boolean>, delay: number) {
+        return new Promise<void>(async (res, rej) => {
+            let i = 0;
+            const jobSetCount = values.length;
+            const id = setInterval(async() => {
+                if (i == jobSetCount) {
+                    clearInterval(id);
+                    res();
+                }
+                if (await action(values[i])) i++;
+            }, delay);
             if (await action(values[i])) i++;
-        }, delay);
-        if (await action(values[i])) i++;
+        });
     }
 
     private splitJobs(values: any[], count: number): any[][] {
@@ -91,6 +112,17 @@ export default class TweetCrawlService implements ITweetCrawlService {
             jobSetCounter++;
         }
         return result;
+    }
+
+    private async twitterExceptions(task: () => void): Promise<boolean> {
+        try {
+            await task();
+        } catch (err) {
+            const error = err as Error;
+            console.log(error.message);
+            if (error.message == "429") return false; // Twitter API is rejecting too many connections
+        }
+        return true;
     }
 
 }

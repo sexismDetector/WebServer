@@ -15,22 +15,35 @@ export default class CSVLoaderService {
         this.tweetRepo = tweetRepo;
     }
 
-    public async loadCSV(filePath: string, parse: (tokens: string[]) => Tweet): Promise<void> {
+    public async loadCSV(
+        filePath: string,
+        filter: (row: string) => boolean,
+        parse: (tokens: string[]) => Tweet
+    ): Promise<void> {
         const rawFile: string = await Filesystem.readFile(filePath, "utf-8");
-        const file: string[] = rawFile.split("\n");
+        let file: string[] = rawFile.split("\n");
+        file = this.filterCSV(file, filter);
         console.log(`Ready to load ${file.length} records`);
         const poolSize = this.tweetRepo.PoolSize;
         const batchSize = 0.9 * poolSize;
         for (let i = 0; i != -1; i++) {
             const promises: Promise<void>[] = [];
             for (let j = 0; j < batchSize; j++) {
-                if (i * batchSize + j > file.length) return;
-                let tokens: string[] = file[i*batchSize + j ].split(",");
+                if (i * batchSize + j >= file.length) return;
+                let tokens: string[] = file[i * batchSize + j].split(",");
                 const tweet = parse(tokens);
-                if (tweet.id == null || tweet.id == undefined || tweet.id == "") continue;
                 promises.push(this.tweetRepo.create(tweet));
             }
             await Promise.all(promises);
+            console.log(`Batch # ${batchSize * i} uploaded`);
         }
+    }
+
+    private filterCSV(rows: string[], filter: (row: string) => boolean): string[] {
+        const filtered: string[] = [];
+        for (let row of rows) {
+            if (filter(row)) filtered.push(row);
+        }
+        return filtered;
     }
 }

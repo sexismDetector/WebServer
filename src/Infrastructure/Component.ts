@@ -5,6 +5,7 @@ export default class Component {
 
     public static readonly TwitterCredentialRepo = "TwitterCredentialRepo";
     public static readonly TweetRepository = "TweetRepository";
+    public static readonly TwitterUserRepository = "TwitterUserRepository";
     public static readonly LabeledWordRepository = "LabeledWordRepository";
 
     public static readonly TwitterAuth = "TwitterAuth";

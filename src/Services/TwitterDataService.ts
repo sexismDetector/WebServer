@@ -5,6 +5,9 @@ import ITwitterDataService from "../Interfaces/ITwitterDataService";
 import {inject, injectable} from "inversify";
 import Component from "../Infrastructure/Component";
 import NotImplementedError from "../Errors/NotImplementedError";
+import {URL} from "url"
+import TwitterUser from "../Models/TwitterUser";
+import NotFoundError from "../Errors/NotFoundError";
 
 @injectable()
 export default class TwitterDataService implements ITwitterDataService {
@@ -12,7 +15,7 @@ export default class TwitterDataService implements ITwitterDataService {
     //private semaphore: Semaphore;
 
     private static get BaseURL(): string {
-        return "https://api.twitter.com/1.1/"
+        return "https://api.twitter.com/1.1/";
     }
 
     private auth: TwitterAuthentication;
@@ -25,7 +28,7 @@ export default class TwitterDataService implements ITwitterDataService {
     }
 
     public async getTweet(id: string): Promise<Tweet> {
-        const options = this.getTweetOptions();
+        const options: Promise<RequestInit> = this.getTweetOptions();
         const url = this.getByIdUrl(id);
         //const release: () => void = await this.semaphore.acquire();
         const res: Response = await fetch(url, await options);
@@ -35,14 +38,39 @@ export default class TwitterDataService implements ITwitterDataService {
         return this.formatTweet(rawTweet);
     }
 
-    public async getFollowers(userId: string): Promise<String[]> {
+    public async searchId(text: string): Promise<string> {
+        const options = this.getTweetOptions();
+        const url = this.searchTweetUrl(text);
+        const res: Response = await fetch(url, await options);
         throw new NotImplementedError();
     }
 
+    public async getUser(userId: string): Promise<TwitterUser> {
+        const options: Promise<RequestInit> = this.getTweetOptions();
+        const url = this.getUserUrl(userId);
+        const res: Response = await fetch(url, await options);
+        if (!res.ok) throw new NotFoundError("Id does not exist:" + userId);
+        const rawUser: any = await res.json();
+        return this.formatUser(rawUser);
+    }
+
     private getByIdUrl(id: string): string {
-        let url =  TwitterDataService.BaseURL;
-        url += "statuses/show.json?id=" + id; //Change to URL build class
-        return url;
+        const url = new URL("statuses/show.json", TwitterDataService.BaseURL);
+        url.search = `id=${id}`;
+        return url.toString();
+    }
+
+    private getUserUrl(id: string): string {
+        const url = new URL("users/show.json", TwitterDataService.BaseURL);
+        url.search = `id=${id}`;
+        return url.toString();
+    }
+
+    private searchTweetUrl(tweet: string) {
+        const encodedTweet = encodeURI(tweet);
+        const url = new URL("search/tweets.json", TwitterDataService.BaseURL);
+        url.search = `q=${encodedTweet}`;
+        return url.toString();
     }
 
     private formatTweet(rawTweet: any): Tweet {
@@ -54,6 +82,17 @@ export default class TwitterDataService implements ITwitterDataService {
             reply_status_id: rawTweet.in_reply_to_status_id_str,
             user_mentions: rawTweet.entities.user_mentions
         };
+    }
+
+    private formatUser(rawUser: any): TwitterUser {
+        return {
+            user_id: rawUser.id_str,
+            screen_name: rawUser.screen_name,
+            followers_count: rawUser.followers_count,
+            friends_count: rawUser.friends_count,
+            favorites_count: rawUser.favourites_count,
+            statuses_count: rawUser.statuses_count
+        }
     }
 
     private async getTweetOptions(): Promise<RequestInit> {

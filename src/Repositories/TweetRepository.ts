@@ -43,6 +43,15 @@ export default class TweetRepository implements ITweetRepository {
         return result;
     }
 
+    public async getAllUserId(): Promise<string[]> {
+        const result = await this.database.read<{user_id: string}>({
+            select: ["user_id"],
+            from: "Tweets",
+            where: "user_id is not null"
+        });
+        return result.map(obj => obj.user_id);
+    }
+
     public async remove(id: string): Promise<void> {
         throw new Error("Not implemented");
     }

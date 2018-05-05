@@ -16,6 +16,8 @@ import CSVLoaderService from "../Services/CSVLoaderService";
 import JSONLoaderService from "../Services/JSONLoaderService";
 import ILabeledWordRepository from "../Interfaces/ILabeledWordRepository";
 import LabeledWordRepository from "../Repositories/LabeledWordRepository";
+import ITwitterUserRepository from "../Interfaces/ITwitterUserRepository";
+import TwitterUserRepository from "../Repositories/TwitterUserRepository";
 
 let container = new Container();
 
@@ -35,7 +37,12 @@ async function prepareContainer(container: Container): Promise<Container> {
         .bind<ITweetRepository>(Component.TweetRepository)
         .to(TweetRepository);
 
-    container.bind<ILabeledWordRepository>(Component.LabeledWordRepository)
+    container
+        .bind<ITwitterUserRepository>(Component.TwitterUserRepository)
+        .to(TwitterUserRepository);
+
+    container
+        .bind<ILabeledWordRepository>(Component.LabeledWordRepository)
         .to(LabeledWordRepository);
 
     container
@@ -47,7 +54,7 @@ async function prepareContainer(container: Container): Promise<Container> {
         twitterCredentials.key,
         twitterCredentials.secret
     );
-    await twitterAuth.getToken();
+    console.log(await twitterAuth.getToken());
 
     container
         .bind<ITweetCrawlService>(Component.TweetCrawlerService)

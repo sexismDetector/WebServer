@@ -14,7 +14,6 @@ export default class PostgreSQLDriver implements IDatabaseDriver {
     private pool: Pool; // Use Pool to increase number of connection
     private poolSize: number;
     private semaphore: Semaphore;
-    private counter = 0;
 
     public constructor() {
         const config: PoolConfig = FileSystem.readJSONSync(__dirname + "/../../config/config.json");
@@ -27,7 +26,6 @@ export default class PostgreSQLDriver implements IDatabaseDriver {
         const release = await this.semaphore.acquire();
         const client = await this.pool.connect();
         release();
-        console.log(`Client senate ${this.counter++}`);
         return client;
     }
 
