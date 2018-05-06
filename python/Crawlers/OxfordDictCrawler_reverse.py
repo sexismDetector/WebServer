@@ -8,7 +8,7 @@ import json
 import re
 
 
-class OxfordDictCrawler:
+class OxfordDictCrawlerReverse:
 
     def __init__(self, fileName):
         self.proc_words = {}    # html files that were already processed
@@ -23,8 +23,9 @@ class OxfordDictCrawler:
             with open(fileName) as english_dict:
                 d = json.load(english_dict)
                 english_dict.close()
-                self.english_word_list = list(d.keys())
-                self.english_word_list.sort()
+                english_word_list = list(d.keys())
+                english_word_list.sort()
+                self.english_word_list = english_word_list[::-1]
         else:  # csv
             with open(fileName):
                 self.csvFile = pd.read_csv(fileName)

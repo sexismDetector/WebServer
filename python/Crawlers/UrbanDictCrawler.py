@@ -52,14 +52,17 @@ class UrbanDictCrawler:
             for row_index, key_val in self.csvFile.iterrows():
                 # url_urban += key_val
                 # url_oxford += key_val
-                res = self.session_urban.get(url_urban + str(key_val[0]))  # This is where we actually connect to the URL
+                print(key_val)
+                res = self.session_urban.get(url_urban + str(key_val[1]))  # This is where we actually connect to the URL
                 soup = BeautifulSoup(res.text, "html.parser")  # this is where we use the html parser to parse
                 if soup.find_all('a',href="/category.php?category=sex"):  # if there exists at least 1 definition of the word that is labeled as sexist, (the anchor tags <a> that has the attr href= ~)
-                    stmt= "UPDATE \"LabeledWords\" SET urban_sexist = 1 WHERE word = \'{}\'".format(key_val[0])
+                    stmt= "insert into \"LabeledWords\" (word, urban_sexist, oxford_sentimental, oxford_sexist) select " \
+                          "\'{}\', 0, 0,0 where not exists (select * from \"LabeledWords\" where word = \'{}\');" \
+                          "UPDATE \"LabeledWords\" SET urban_sexist = 1 WHERE word = \'{}\'".format(key_val[1],key_val[1],key_val[1])
                     isSexist = 1
                 # else :
                 #     stmt= "UPDATE \"LabeledWords\" SET urban_sexist = 0 WHERE word = {}".format(key_val[0])
-                    print(key_val[0] + ": " + isSexist)
+                    print(key_val[1] + ": " + str(isSexist))
                     self.cur.execute(stmt)
                     self.conn.commit()
                     time.sleep(0.2)

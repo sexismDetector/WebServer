@@ -43,7 +43,9 @@ if __name__ == '__main__':
     cur = connObj.cursor()
     # cur.execute("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name= 'Tweets'")        ## for the SCHEMA
     # cur.execute("SELECT count('Tweets') FROM \"Tweets\" where label = 'sexism'")    ## SELECT QUERY
-    cur.execute("SELECT count('Tweets') FROM \"Tweets\"")    ## SELECT QUERY
+    # cur.execute("SELECT * FROM c")    ## SELECT QUERY
+    cur.execute("SELECT * FROM \"LabeledWords\" where urban_sexist > 0 order by urban_sexist")
+    # cur.execute("SELECT * FROM \"LabeledWords\" where word=\'\'")
 
     # show the results of the query
     for row in cur:

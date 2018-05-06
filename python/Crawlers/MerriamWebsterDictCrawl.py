@@ -8,7 +8,7 @@ import json
 import re
 
 
-class OxfordDictCrawler:
+class MerriamWebsterDictCrawler:
 
     def __init__(self, fileName):
         self.proc_words = {}    # html files that were already processed
@@ -23,53 +23,41 @@ class OxfordDictCrawler:
             with open(fileName) as english_dict:
                 d = json.load(english_dict)
                 english_dict.close()
-                self.english_word_list = list(d.keys())
+                self.english_word_list = d.keys()
                 self.english_word_list.sort()
         else:  # csv
             with open(fileName):
                 self.csvFile = pd.read_csv(fileName)
 
     def crawl(self):
-        url_oxford = "https://en.oxforddictionaries.com/definition/"
+        url_mw = "https://www.merriam-webster.com/dictionary/"
 
         if self.fileName[-4:] == 'json':
             for word in self.english_word_list:
                 # print("fine until line 35")
-                found_page = False
-                while True:
-                    res = self.session_oxford.get(url_oxford + word)  # This is where we actually connect to the URL
-                    # print(res)
-                    soup = BeautifulSoup(res.text, "html.parser")  # this is where we use the html parser to parse
-                    wordFirstLetter = word[:1] + '*'
-                    # if len(soup.find_all('span', class_="hw", text=re.compile(wordFirstLetter, re.IGNORECASE))) >= 1: found_page = True
-                    if res.status_code == 200: found_page = True
-                    else: continue  # continue on within the while loop, with the same word
+                res = self.session_oxford.get(url_mw + word)  # This is where we actually connect to the URL
+                # print(res)
+                soup = BeautifulSoup(res.text, "html.parser")  # this is where we use the html parser to parse
+                numOfVulgar_Slang = len(soup.find_all('span', class_="sl", text="vulgar slang"))
+                if numOfVulgar_Slang > 0: print(word + " vulgar_slang: " + str(numOfVulgar_Slang))
 
-                    numOfVulgar_Slang = len(soup.find_all('span', class_="sense-registers", text="vulgar slang "))
-                    if numOfVulgar_Slang > 0: print(word + " vulgar_slang: " + str(numOfVulgar_Slang))
-                    numOfDerogatory=0
+                numOfObscene=0
+                if len(soup.find_all('span', class_="sdsense",text=re.compile(
+                        r'(female)|\b(male)|(wo)?m(a|e)n|(person)|(girl)|(boy)|(gender)|(homosexual)'))) >=1:
+                    numOfObscene = len(soup.find_all('span', class_="sl", text="obscene"))
+                    print(word +" Informal_Offensive: " + str(numOfObscene))
 
-                    numOfInformal_Offensive=0
-                    if len(soup.find_all('span', class_="ind",text=re.compile(
-                            r'(female)|\b(male)|(wo)?m(a|e)n|(person)|(girl)|(boy)|(gender)|(homosexual)'))) >=1:
-                        numOfInformal_Offensive = len(soup.find_all('span', class_="sense-registers", text="informal, offensive "))
-                        print(word +" Informal_Offensive: " + str(numOfInformal_Offensive))
-                        dero = soup.find_all('span', class_="sense-registers", text="derogatory")
-                        numOfDerogatory = len(dero)
-                        print(word+ " derogatory: " + str(numOfDerogatory))
+                numOfDef = numOfObscene + numOfVulgar_Slang
+                if numOfDef >= 1:  # if there exists at least 1 definition of the word that is labeled as sexist, (the anchor tags <a> that has the attr href= ~)
+                    stmt = "UPDATE \"LabeledWords\" SET oxford_sentimental = {} WHERE word = \'{}\'".format(numOfDef,
+                                                                                                      word)
 
-                    numOfDef = numOfInformal_Offensive + numOfDerogatory + numOfVulgar_Slang
-                    if numOfDef >= 1:  # if there exists at least 1 definition of the word that is labeled as sexist, (the anchor tags <a> that has the attr href= ~)
-                        stmt = "UPDATE \"LabeledWords\" SET oxford_sexist = {} WHERE word = \'{}\'".format(numOfDef,
-                                                                                                          word)
-
-                        # else :
-                        #     stmt= "UPDATE \"LabeledWords\" SET urban_sexist = 0 WHERE word = {}".format(word)
-                        print(word + ": " + str(numOfDef))
-                        self.cur.execute(stmt)
-                        self.conn.commit()
-                        time.sleep(0.2)
-                    if found_page: break
+                    # else :
+                    #     stmt= "UPDATE \"LabeledWords\" SET urban_sexist = 0 WHERE word = {}".format(word)
+                    print(word + ": " + str(numOfDef))
+                    self.cur.execute(stmt)
+                    self.conn.commit()
+                    time.sleep(0.2)
 
         else:  # in case of the csv file,
             for row_index, key_val in self.csvFile.iterrows():
@@ -77,15 +65,15 @@ class OxfordDictCrawler:
                 # url_oxford += key_val
                 print(key_val)
                 res = self.session_oxford.get(
-                    url_oxford + str(key_val[1]))  # This is where we actually connect to the URL
+                    url_mw + str(key_val[1]))  # This is where we actually connect to the URL
                 soup = BeautifulSoup(res.text, "html.parser")  # this is where we use the html parser to parse
                 numOfDef = len(soup.find_all('a', href="/category.php?category=sex"))
-                if numOfDef > 1:  # if there exists at least 1 definition of the word that is labeled as sexist, (the anchor tags <a> that has the attr href= ~)
+                if numOfDef >= 1:  # if there exists at least 1 definition of the word that is labeled as sexist, (the anchor tags <a> that has the attr href= ~)
                     stmt = "insert into \"LabeledWords\" (word, urban_sexist, oxford_sentimental, oxford_sexist) select " \
                            "\'{}\', 0, 0,0 where not exists (select * from \"LabeledWords\" where word = \'{}\');" \
-                           "UPDATE \"LabeledWords\" SET oxford_sexist = {} WHERE word = \'{}\'".format(key_val[1],
+                           "UPDATE \"LabeledWords\" SET oxford_sentimental = {} WHERE word = \'{}\'".format(key_val[1],
                                                                                                       key_val[1],
-                                                                                                      numOfDef - 1,
+                                                                                                      numOfDef,
                                                                                                       key_val[1])
                     # else :
                     #     stmt= "UPDATE \"LabeledWords\" SET urban_sexist = 0 WHERE word = {}".format(key_val[0])
