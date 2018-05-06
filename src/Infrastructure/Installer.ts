@@ -21,6 +21,8 @@ import TwitterUserRepository from "../Repositories/TwitterUserRepository";
 
 let container = new Container();
 
+import "../Controllers/ClassifierController";
+
 async function prepareContainer(container: Container): Promise<Container> {
 
     console.log("Preparing Components...");

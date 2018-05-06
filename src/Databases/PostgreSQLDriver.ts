@@ -37,6 +37,7 @@ export default class PostgreSQLDriver implements IDatabaseDriver {
         const client: PoolClient = await this.getClient();
         const resultPromise: Promise<any[]> = new SelectBuilder(client)
             .select(query.select)
+            .distinct(query.distinct != undefined && query.distinct)
             .from(query.from)
             .where(query.where)
         .execute();

@@ -1,10 +1,23 @@
 import * as Express from "express";
 import exceptionally from "../Errors/Exceptionally";
+import {controller, httpGet, interfaces, requestParam} from "inversify-express-utils";
+import Controller = interfaces.Controller;
+import PythonSpawnService from "../Services/PythonSpawnService";
 
-let controller: Express.Router = Express.Router();
+@controller("/classify")
+export class ClassifierController implements Controller {
 
-controller.get("/:comment", (req, res) => exceptionally(res, async () => {
-    const comment: string = req.params["comment"];
-}));
+    public constructor() {
 
-export default controller;
+    }
+
+    @httpGet("/:text") // TODO: Consider change to POST Request
+    private async classify(
+        @requestParam("text") text: string
+    ): Promise<boolean> {
+        const model = new PythonSpawnService("somePath", [], 10);
+        const response: number = await model.calculate([text]);
+        return response == 1;
+    }
+
+}
