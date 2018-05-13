@@ -5,7 +5,8 @@ import ITweetCrawlService from "./Interfaces/ITweetCrawlService";
 import CSVLoaderService from "./Services/CSVLoaderService";
 import Component from "./Infrastructure/Component";
 import JSONLoaderService from "./Services/JSONLoaderService";
-import ITwitterDataService from "./Interfaces/ITwitterDataService";
+import {InversifyExpressServer} from "inversify-express-utils";
+import * as Express from "express";
 
 class Main {
 
@@ -15,6 +16,18 @@ class Main {
 
     public static async main(): Promise<void> {
         Main.container = await container;
+        let server = new InversifyExpressServer(Main.container);
+        server.setConfig(app => {
+
+        });
+
+        let app: Express.Application = server.build();
+        const port = 3000;
+        app.listen(port);
+        console.log(`Listening on port ${port}`)
+    }
+
+    public static async crawlTwitterUsers() {
         const crawlService = Main.container.get<ITweetCrawlService>(Component.TweetCrawlerService);
         crawlService.storeUsers();
     }

@@ -46,6 +46,7 @@ export default class TweetRepository implements ITweetRepository {
     public async getAllUserId(): Promise<string[]> {
         const result = await this.database.read<{user_id: string}>({
             select: ["user_id"],
+            distinct: true,
             from: "Tweets",
             where: "user_id is not null"
         });

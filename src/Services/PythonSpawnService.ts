@@ -1,33 +1,22 @@
-import {ChildProcess, spawn} from "child_process";
 
-export default class PythonSpawnService {
+import PythonProcess from "../Models/PythonProcess";
 
-    private filePath: string;
-    private args: string[];
+export default class PythonSpawnService { // TODO: Inversify this :)
 
-    public constructor(filePath: string) {
-        this.filePath = filePath;
-        this.args = [];
+    private processes: PythonProcess[];
+
+    public constructor(filePath: string, args: string[], poolSize: number) {
+        this.processes = [];
+        for (let i = 0; i < poolSize; i++) {
+            this.processes.push(new PythonProcess(filePath, args));
+        }
     }
 
-    public set Args(args: string[]) {
-        this.args = args;
-    }
-
-    public async run(): Promise<string> {
-        this.args.unshift(this.filePath); // Prepend program path
-        let process: ChildProcess;
-        return new Promise<string>((resolve, reject) => {
-            try {
-                process = spawn("python3", this.args);
-            } catch(err) {
-                console.log(err);
-                reject(err);
-            }
-            process.stdout.on("data", data => {
-                resolve(data.toString());
-            });
-        });
+    public async calculate(args: string[]): Promise<number> {
+        for (let process of this.processes) {
+            if (process.Available) return await process.calculate(args);
+        }
+        return -1; // TODO: Queueing
     }
 
 }

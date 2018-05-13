@@ -34,6 +34,12 @@ export default class SelectBuilder extends AbstractQuery<any[]> {
         return this;
     }
 
+    public distinct(isDistinct: boolean): SelectBuilder {
+        const replaceValue = isDistinct ? "distinct" : "";
+        this.query = this.query.replace("@(d)", replaceValue);
+        return this;
+    }
+
     public async execute(): Promise<any[]> {
         const array = this.columns;
         //.concat(this.table)
@@ -43,7 +49,7 @@ export default class SelectBuilder extends AbstractQuery<any[]> {
     }
 
     protected getRawQuery(): string {
-        return "Select @(x) From @(y) Where @(z);";
+        return "Select @(d) @(x) From @(y) Where @(z);";
     }
 
     private selectAllColumns(columns: string[]): boolean {
