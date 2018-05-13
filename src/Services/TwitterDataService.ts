@@ -38,9 +38,9 @@ export default class TwitterDataService implements ITwitterDataService {
         return this.formatTweet(rawTweet);
     }
 
-    public async searchId(text: string): Promise<string> {
+    public async searchId(screenName: string): Promise<string> {
         const options = this.getTweetOptions();
-        const url = this.searchTweetUrl(text);
+        const url = this.searchTweetUrl(screenName);
         const res: Response = await fetch(url, await options);
         throw new NotImplementedError();
     }
@@ -54,22 +54,34 @@ export default class TwitterDataService implements ITwitterDataService {
         return this.formatUser(rawUser);
     }
 
+    public async getUserByName(screenName: string): Promise<TwitterUser> {
+        const options = this.getTweetOptions();
+        const url = this.getUserByNameUrl(screenName);
+        const res: Response = await fetch(url, await options);
+        if (!res.ok) throw new NotFoundError("Screen name does not exist:" + screenName);
+        const rawUser: any = await res.json();
+        return this.formatUser(rawUser);
+    }
+
     private getByIdUrl(id: string): string {
-        const url = new URL("statuses/show.json", TwitterDataService.BaseURL);
-        url.search = `id=${id}`;
-        return url.toString();
+        return this.createUri("statuses/show.json", "id", id);
     }
 
     private getUserUrl(id: string): string {
-        const url = new URL("users/show.json", TwitterDataService.BaseURL);
-        url.search = `id=${id}`;
-        return url.toString();
+        return this.createUri("users/show.json", "id", id);
+    }
+
+    private getUserByNameUrl(screenName: string) {
+        return this.createUri("users/show.json", "screen_name", screenName);
     }
 
     private searchTweetUrl(tweet: string) {
-        const encodedTweet = encodeURI(tweet);
-        const url = new URL("search/tweets.json", TwitterDataService.BaseURL);
-        url.search = `q=${encodedTweet}`;
+        return this.createUri("search/tweets.json", "q", encodeURI(tweet));
+    }
+
+    private createUri(path: string, queryParam: string, encodedQuery: string): string {
+        const url = new URL(path, TwitterDataService.BaseURL);
+        url.search = `${queryParam}=${encodedQuery}`;
         return url.toString();
     }
 

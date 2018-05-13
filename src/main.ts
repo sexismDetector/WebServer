@@ -7,6 +7,7 @@ import Component from "./Infrastructure/Component";
 import JSONLoaderService from "./Services/JSONLoaderService";
 import {InversifyExpressServer} from "inversify-express-utils";
 import * as Express from "express";
+import bodyParser = require("body-parser");
 
 class Main {
 
@@ -17,7 +18,7 @@ class Main {
         Main.container = await container;
         let server = new InversifyExpressServer(Main.container);
         server.setConfig(app => {
-
+            app.use(bodyParser.json());
         });
 
         let app: Express.Application = server.build();

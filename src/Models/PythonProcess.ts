@@ -43,7 +43,7 @@ export default class PythonProcess {
         if (!isNaN(result)) {
             promise.resolve(result); // calculate returned promise resolves
         } else {
-            promise.reject("Unexpected outcome from Python Process"); // same, but rejected
+            promise.reject("Unexpected outcome from Python Process: " + data.toString()); // same, but rejectedcc
         }
         if (this.unlock != null) {
             this.unlock();

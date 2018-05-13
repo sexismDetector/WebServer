@@ -12,14 +12,14 @@ from TextSVM import TextSVM
 
 
 def read_in():
-    # line1 = sys.stdin.readline()
+    line1 = sys.stdin.readline()
 
-    # tweet = json.load(line1)
-    tweet = json.load(sys.stdin)
+    tweet = json.loads(line1)
+    #tweet = json.load(sys.stdin)
 
-    # line2 = sys.stdin.readline()
-    # demographics = json.load(line2)
-    demographics = json.load(sys.stdin)
+    line2 = sys.stdin.readline()
+    demographics = json.loads(line2)
+    #demographics = json.load(sys.stdin)
 
 
     return tweet, demographics
@@ -29,11 +29,13 @@ def read_in():
 # execute classification to print!! 0(not sexist) or 1(sexist)
 
 
-def run_SVM(tweet, demographics):
+def run_SVM(info):
+    tweet = info[0]
+    demographics = info[1]
     text = tweet["text"]
     user_id = demographics["user_id"]
     screen_name = demographics["screen_name"]
-    followers_count = demographics["follwers_count"]
+    followers_count = demographics["followers_count"]
     favorites_count = demographics["favorites_count"]
 
     tsvm = TextSVM(text, user_id, screen_name, followers_count, favorites_count)

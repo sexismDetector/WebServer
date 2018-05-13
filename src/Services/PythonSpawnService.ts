@@ -35,6 +35,7 @@ export default class PythonSpawnService {
                     const value = await process.calculate(promise.Data);
                     promise.resolve(value);
                 } catch (err) {
+                    console.log(err.message)
                     promise.reject(err);
                 }
             }
