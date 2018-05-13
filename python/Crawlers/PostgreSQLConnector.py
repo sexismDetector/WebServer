@@ -1,6 +1,5 @@
 import psycopg2
-from NewsCrawler.config import config
-
+from config import config
 class PostgresConnector:
 
     def __init__(self):
@@ -44,7 +43,7 @@ if __name__ == '__main__':
     # cur.execute("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name= 'Tweets'")        ## for the SCHEMA
     # cur.execute("SELECT count('Tweets') FROM \"Tweets\" where label = 'sexism'")    ## SELECT QUERY
     # cur.execute("SELECT * FROM c")    ## SELECT QUERY
-    cur.execute("SELECT * FROM \"LabeledWords\" where urban_sexist > 0 order by urban_sexist")
+    cur.execute("SELECT * FROM \"LabeledWords\" where oxford_sexist > 0 order by word")
     # cur.execute("SELECT * FROM \"LabeledWords\" where word=\'\'")
 
     # show the results of the query

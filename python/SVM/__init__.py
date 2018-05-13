@@ -38,11 +38,12 @@ def run_SVM(tweet, demographics):
 
     tsvm = TextSVM(text, user_id, screen_name, followers_count, favorites_count)
 
-    return tsvm.predict()
+    tsvm.predict()
+    # return tsvm.predict()
 
 
 
 if __name__ == '__main__':
 
-    read_in()
-    run_SVM()
+
+    run_SVM(read_in())
