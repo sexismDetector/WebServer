@@ -18,14 +18,21 @@ import ILabeledWordRepository from "../Interfaces/ILabeledWordRepository";
 import LabeledWordRepository from "../Repositories/LabeledWordRepository";
 import ITwitterUserRepository from "../Interfaces/ITwitterUserRepository";
 import TwitterUserRepository from "../Repositories/TwitterUserRepository";
+import * as Filesystem from "fs-extra";
 
 let container = new Container();
 
 import "../Controllers/ClassifierController";
+import PythonSpawnService from "../Services/PythonSpawnService";
+import PythonModelFiles from "../Models/PythonModelFIles";
 
 async function prepareContainer(container: Container): Promise<Container> {
 
     console.log("Preparing Components...");
+
+    const filePath = `${__dirname}/../../config/models.json`;
+    const pythonModels: PythonModelFiles = await Filesystem.readJson(filePath);
+
 
     container
         .bind<ITwitterCredentialsRepository>(Component.TwitterCredentialRepo)
@@ -56,20 +63,34 @@ async function prepareContainer(container: Container): Promise<Container> {
         twitterCredentials.key,
         twitterCredentials.secret
     );
-    console.log(await twitterAuth.getToken());
+    //console.log(await twitterAuth.getToken());
+
+    container
+        .bind<TwitterAuthentication>(Component.TwitterAuth)
+        .toConstantValue(twitterAuth);
 
     container
         .bind<ITweetCrawlService>(Component.TweetCrawlerService)
         .to(TweetCrawlService);
 
-    container.bind<TwitterAuthentication>(Component.TwitterAuth)
-        .toConstantValue(twitterAuth);
 
-    container.bind<CSVLoaderService>(Component.CSVLoaderService)
+    container
+        .bind<CSVLoaderService>(Component.CSVLoaderService)
         .to(CSVLoaderService);
 
-    container.bind<JSONLoaderService>(Component.JSONLoaderService)
+    container
+        .bind<JSONLoaderService>(Component.JSONLoaderService)
         .to(JSONLoaderService);
+
+    container
+        .bind<PythonSpawnService>(Component.PythonSpawnService)
+        .toConstantValue(
+            new PythonSpawnService(
+                `${__dirname}/../../` + pythonModels.svm,
+                [],
+                pythonModels.poolSize
+            )
+        );
 
     console.log("Components Prepared!");
 

@@ -19,11 +19,12 @@ export default class PythonProcess {
 
         args.unshift(filePath); // Prepend filepath
         this.process = spawn("python3", args);
-        this.process.on("data", this.processOutputListener);
+        this.process.stdout.on("data", data => this.processOutputListener(data as Buffer));
+        this.process.stderr.on("data", data => this.processErrorListener(data as Buffer));
     }
 
     public get Available(): boolean { // Check what count stands for
-        return this.semaphore.count == 0;
+        return this.semaphore.count == 1;
     }
 
     public async calculate(args: string[]): Promise<number> {
@@ -31,13 +32,13 @@ export default class PythonProcess {
         this.unlock = await this.semaphore.acquire();
         this.promise = new DeferredPromise<number>();
         for (let arg of args) {
-            this.process.stdin.write(arg, "utf-8");
+            this.process.stdin.write(arg + "\n");
         }
         return this.promise.promise;
     }
 
-    private processOutputListener(data: string): void {
-        const result = Number(data);
+    public processOutputListener: (data: Buffer) => void = data => {
+        const result = Number(data.toString());
         const promise = this.promise as DeferredPromise<number>;
         if (!isNaN(result)) {
             promise.resolve(result); // calculate returned promise resolves
@@ -48,6 +49,11 @@ export default class PythonProcess {
             this.unlock();
             this.clean();
         }
+    }
+
+    public processErrorListener: (err: Buffer) => void = err => {
+        console.log(err.toString());
+        throw new Error(err.toString());
     }
 
     private clean(): void {
