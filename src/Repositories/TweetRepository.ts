@@ -3,6 +3,7 @@ import Tweet from "../Models/Tweet";
 import {inject, injectable} from "inversify";
 import IDatabaseDriver from "../Interfaces/IDatabaseDriver";
 import Component from "../Infrastructure/Component";
+import NotImplementedError from "../Errors/NotImplementedError";
 
 @injectable()
 export default class TweetRepository implements ITweetRepository {
@@ -43,6 +44,15 @@ export default class TweetRepository implements ITweetRepository {
         return result;
     }
 
+    public async getAllIf(condition: string) {
+        const result = await this.database.read<Tweet>({
+            select: ["*"],
+            from: "Tweets",
+            where: condition
+        });
+        return result;
+    }
+
     public async getAllUserId(): Promise<string[]> {
         const result = await this.database.read<{user_id: string}>({
             select: ["user_id"],
@@ -53,8 +63,15 @@ export default class TweetRepository implements ITweetRepository {
         return result.map(obj => obj.user_id);
     }
 
+    public async update(tweet: Tweet): Promise<void> {
+        this.database.update({
+            // TODO Implement Update Query
+        });
+        throw new NotImplementedError();
+    }
+
     public async remove(id: string): Promise<void> {
-        throw new Error("Not implemented");
+        throw new NotImplementedError();
     }
 
 }

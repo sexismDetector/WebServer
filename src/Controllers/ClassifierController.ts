@@ -1,5 +1,5 @@
 
-import {controller, httpGet, httpPost, interfaces, requestBody, requestParam, response} from "inversify-express-utils";
+import {controller, httpPost, interfaces, requestBody, response} from "inversify-express-utils";
 import Controller = interfaces.Controller;
 import PythonSpawnService from "../Services/PythonSpawnService";
 import Component from "../Infrastructure/Component";
@@ -29,6 +29,12 @@ export class ClassifierController implements Controller {
         @requestBody() body: ClassifyRequestBody,
         @response() res: Response
     ): Promise<string> {
+        const args = await this.makeArgs(body);
+        const response: number = await this.pythonService.calculate(args);
+        return response.toString();
+    }
+
+    private async makeArgs(body: ClassifyRequestBody): Promise<string[]> {
         const twitterUserPromise = this.twitterService.getUserByName(body.screen_name);
         const comment: PostComment = {
             text: body.text,
@@ -41,11 +47,7 @@ export class ClassifierController implements Controller {
             followers_count: twitterUser.followers_count,
             favorites_count: twitterUser.favorites_count
         };
-        const args = [comment, user];
-        const response: number = await this.pythonService.calculate(
-            args.map(obj => JSON.stringify(obj))
-        );
-        return response.toString();
+        return [comment, user].map(obj => JSON.stringify(obj))
     }
 
 }

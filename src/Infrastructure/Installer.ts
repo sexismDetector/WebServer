@@ -25,6 +25,8 @@ let container = new Container();
 import "../Controllers/ClassifierController";
 import PythonSpawnService from "../Services/PythonSpawnService";
 import PythonModelFiles from "../Models/PythonModelFIles";
+import ITweetAuthorCrawlService from "../Interfaces/ITweetAuthorCrawlService";
+import TweetAuthorCrawlService from "../Services/TweetAuthorCrawlService";
 
 async function prepareContainer(container: Container): Promise<Container> {
 
@@ -73,6 +75,9 @@ async function prepareContainer(container: Container): Promise<Container> {
         .bind<ITweetCrawlService>(Component.TweetCrawlerService)
         .to(TweetCrawlService);
 
+    container
+        .bind<ITweetAuthorCrawlService>(Component.TweetAuthorCrawlService)
+        .to(TweetAuthorCrawlService);
 
     container
         .bind<CSVLoaderService>(Component.CSVLoaderService)

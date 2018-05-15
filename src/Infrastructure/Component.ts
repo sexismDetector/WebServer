@@ -12,6 +12,7 @@ export default class Component {
 
     public static readonly TweetCrawlerService = "TweetCrawlerService";
     public static readonly ClassifierService = "ClassifierService";
+    public static readonly TweetAuthorCrawlService = "TweetAuthorCrawlService";
     public static readonly TwitterDataService = "TwitterDataService";
     public static readonly CSVLoaderService = "CSVLoaderService";
     public static readonly JSONLoaderService = "JSONLoaderService";
