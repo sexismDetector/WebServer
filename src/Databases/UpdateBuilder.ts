@@ -10,7 +10,7 @@ export default class UpdateBuilder extends AbstractQuery<void> {
     private values: string[];
     private condition: string;
 
-    public constructor(client: PoolClient) {
+    public constructor(client: PoolClient | null) {
         super(client);
         this.table = "";
         this.condition = "";
@@ -42,7 +42,7 @@ export default class UpdateBuilder extends AbstractQuery<void> {
         return this;
     }
 
-    public async executeQuery(client: PoolClient): Promise<void> {
+    protected async executeQuery(client: PoolClient): Promise<void> {
         await client.query(this.query);
     }
 

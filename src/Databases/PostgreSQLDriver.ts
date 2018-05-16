@@ -7,6 +7,8 @@ import {injectable} from "inversify";
 import InsertQuery from "../Models/InsertQuery";
 import InsertBuilder from "./InsertBuilder";
 import {Semaphore} from "await-semaphore";
+import UpdateBuilder from "./UpdateBuilder";
+import UpdateQuery from "../Models/UpdateQuery";
 
 @injectable()
 export default class PostgreSQLDriver implements IDatabaseDriver {
@@ -22,13 +24,6 @@ export default class PostgreSQLDriver implements IDatabaseDriver {
         this.semaphore = new Semaphore(1);
     }
 
-    private async getClient(): Promise<PoolClient> {
-        const release = await this.semaphore.acquire();
-        const client = await this.pool.connect();
-        release();
-        return client;
-    }
-
     public get PoolSize(): number {
         return this.poolSize;
     }
@@ -40,8 +35,8 @@ export default class PostgreSQLDriver implements IDatabaseDriver {
             .distinct(query.distinct != undefined && query.distinct)
             .from(query.from)
             .where(query.where)
-        .executeQuery();
-        const result = await resultPromise;
+        .execute();
+        const result: T[] = await this.handleExceptions(resultPromise);
         client.release();
         return result;
     }
@@ -50,8 +45,16 @@ export default class PostgreSQLDriver implements IDatabaseDriver {
 
     }
 
-    public async update(): Promise<void> {
-
+    public async update(query: UpdateQuery): Promise<void> {
+        const client: PoolClient = await this.getClient();
+        const result = new UpdateBuilder(client)
+            .atTable(query.table)
+            .setColumns(query.columns)
+            .setValues(query.values)
+            .where(query.where)
+        .execute();
+        this.handleExceptions(result);
+        client.release();
     }
 
     public async write(query: InsertQuery): Promise<void> {
@@ -60,7 +63,7 @@ export default class PostgreSQLDriver implements IDatabaseDriver {
             .into(query.into)
             .columns(query.columns)
             .values(query.values)
-        .executeQuery();
+        .execute();
         try {
             await result;
         } catch (err) {
@@ -68,6 +71,22 @@ export default class PostgreSQLDriver implements IDatabaseDriver {
             console.log(err);
         }
         client.release();
+    }
+
+    private async getClient(): Promise<PoolClient> {
+        const release = await this.semaphore.acquire();
+        const client = await this.pool.connect();
+        release();
+        return client;
+    }
+
+    private async handleExceptions(promise: Promise<any>): Promise<any>  {
+        try {
+            return await promise;
+        } catch (err) {
+            console.log("Shit!");
+            console.log(err);
+        }
     }
 
 }
