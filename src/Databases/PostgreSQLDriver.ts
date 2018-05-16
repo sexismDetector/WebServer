@@ -40,7 +40,7 @@ export default class PostgreSQLDriver implements IDatabaseDriver {
             .distinct(query.distinct != undefined && query.distinct)
             .from(query.from)
             .where(query.where)
-        .execute();
+        .executeQuery();
         const result = await resultPromise;
         client.release();
         return result;
@@ -60,7 +60,7 @@ export default class PostgreSQLDriver implements IDatabaseDriver {
             .into(query.into)
             .columns(query.columns)
             .values(query.values)
-        .execute();
+        .executeQuery();
         try {
             await result;
         } catch (err) {

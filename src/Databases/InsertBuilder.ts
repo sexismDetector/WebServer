@@ -1,5 +1,5 @@
 
-import {PoolClient} from "pg";
+import {Pool, PoolClient} from "pg";
 import AbstractQuery from "./AbstractQuery";
 
 export default class InsertBuilder extends AbstractQuery<void> {
@@ -8,7 +8,7 @@ export default class InsertBuilder extends AbstractQuery<void> {
     private columnList: string[];
     private rawValues: any[];
 
-    public constructor(client: PoolClient) {
+    public constructor(client: PoolClient | null) {
         super(client);
         this.table = "";
         this.rawValues = [];
@@ -39,9 +39,9 @@ export default class InsertBuilder extends AbstractQuery<void> {
         return this;
     }
 
-    public async execute(): Promise<void> {
+    protected async executeQuery(client: PoolClient): Promise<void> {
         this.query = this.query.replace(new RegExp("\'", "g"), "''");
-        await this.client.query(this.query, this.rawValues);
+        await client.query(this.query, this.rawValues);
     }
 
     protected getRawQuery(): string {

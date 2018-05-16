@@ -7,7 +7,7 @@ export default class SelectBuilder extends AbstractQuery<any[]> {
     private table: string;
     private condition: string;
 
-    public constructor(client: PoolClient) {
+    public constructor(client: PoolClient | null) {
         super(client);
         this.columns = [];
         this.table = this.condition = "";
@@ -35,21 +35,21 @@ export default class SelectBuilder extends AbstractQuery<any[]> {
     }
 
     public distinct(isDistinct: boolean): SelectBuilder {
-        const replaceValue = isDistinct ? "distinct" : "";
+        const replaceValue = isDistinct ? " distinct" : "";
         this.query = this.query.replace("@(d)", replaceValue);
         return this;
     }
 
-    public async execute(): Promise<any[]> {
+    protected async executeQuery(client: PoolClient): Promise<any[]> {
         const array = this.columns;
         //.concat(this.table)
         //.concat(this.condition);
-        const result = await this.client.query(this.query);
+        const result = await client.query(this.query);
         return result.rows;
     }
 
     protected getRawQuery(): string {
-        return "Select @(d) @(x) From @(y) Where @(z);";
+        return "Select@(d) @(x) From @(y) Where @(z);";
     }
 
     private selectAllColumns(columns: string[]): boolean {
