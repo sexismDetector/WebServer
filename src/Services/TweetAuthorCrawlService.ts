@@ -21,7 +21,7 @@ export default class TwitterAuthorCrawlService implements ITweetAuthorCrawlServi
         @inject(Component.TwitterDataService) twitterData: ITwitterDataService
     ) {
         this.browser = new Nightmare({
-            show: true,
+            show: false,
             gotoTimeout: 1000
         });
         this.tweetRepo = tweetRepo;
