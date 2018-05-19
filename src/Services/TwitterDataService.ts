@@ -42,6 +42,8 @@ export default class TwitterDataService implements ITwitterDataService {
         const options = this.getTweetOptions();
         const url = this.searchTweetUrl(screenName);
         const res: Response = await fetch(url, await options);
+        const rawResponse = await res.json();
+        console.log(rawResponse);
         throw new NotImplementedError();
     }
 

@@ -8,6 +8,7 @@ import JSONLoaderService from "./Services/JSONLoaderService";
 import {InversifyExpressServer} from "inversify-express-utils";
 import * as Express from "express";
 import bodyParser = require("body-parser");
+import ITweetAuthorCrawlService from "./Interfaces/ITweetAuthorCrawlService";
 
 class Main {
 
@@ -16,6 +17,10 @@ class Main {
 
     public static async main(): Promise<void> {
         Main.container = await container;
+
+        const crawler = Main.container.get<ITweetAuthorCrawlService>(Component.TweetAuthorCrawlService);
+        crawler.fixMissing();
+        /*
         let server = new InversifyExpressServer(Main.container);
         server.setConfig(app => {
             app.use(bodyParser.json());
@@ -25,6 +30,7 @@ class Main {
         const port = 3000;
         app.listen(port);
         console.log(`Listening on port ${port}`);
+        */
     }
 
     public static async crawlTwitterUsers() {

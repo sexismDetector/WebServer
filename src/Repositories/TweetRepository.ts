@@ -4,6 +4,7 @@ import {inject, injectable} from "inversify";
 import IDatabaseDriver from "../Interfaces/IDatabaseDriver";
 import Component from "../Infrastructure/Component";
 import NotImplementedError from "../Errors/NotImplementedError";
+import {text} from "body-parser";
 
 @injectable()
 export default class TweetRepository implements ITweetRepository {
@@ -64,7 +65,6 @@ export default class TweetRepository implements ITweetRepository {
     }
 
     public async update(tweet: Tweet): Promise<void> {
-        const id = tweet.id;
         for (let key of Object.keys(tweet)) {
             const value = (tweet as any)[key];
             if (value == "" || value == null) {
@@ -76,7 +76,7 @@ export default class TweetRepository implements ITweetRepository {
             table: "Tweets",
             columns: Object.keys(tweet),
             values: Object.values(tweet),
-            where: `id = ${id}`
+            where: `text = '${tweet.text}'`
         });
     }
 
