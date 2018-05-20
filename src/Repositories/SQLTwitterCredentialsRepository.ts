@@ -1,6 +1,5 @@
 import ITwitterCredentialsRepository from "../Interfaces/ITwitterCredentialsRepository";
 import TwitterCredentials from "../Models/TwitterCredentials";
-import PostgreSQLDriver from "../Databases/PostgreSQLDriver";
 import {inject, injectable} from "inversify";
 import IDatabaseDriver from "../Interfaces/IDatabaseDriver";
 import Component from "../Infrastructure/Component";
