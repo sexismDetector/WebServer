@@ -2,6 +2,7 @@
 Script that makes predictions based on comments
 
 """
+import os
 import sys, json
 from keras.preprocessing.text import Tokenizer
 from keras import preprocessing
@@ -24,7 +25,7 @@ def Tokenize_New_Instance(new_string, text_length):
     return tokenized_text
 
 
-model = load_model('../../res/sexism_classifier.h5')
+model = load_model(os.path.dirname(os.path.abspath(__file__)) + '/../../res/sexism_classifier.h5')
 
 while True:
     tweet = sys.stdin.readline()
@@ -34,3 +35,4 @@ while True:
     raw_text = first_json["text"]
     input_prediction = model.predict(Tokenize_New_Instance(raw_text, 200))
     print(input_prediction[0][0])
+    sys.stdout.flush()

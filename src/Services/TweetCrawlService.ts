@@ -75,6 +75,12 @@ export default class TweetCrawlService implements ITweetCrawlService {
         return labeledTweets;
     }
 
+    /**
+     * Stores a Tweet
+     * @param {Tweet} tweet
+     * @param {LabeledTweet} tweetLabel
+     * @return {Promise<void>}
+     */
     private async storeTweet(tweet: Tweet, tweetLabel: TweetLabel): Promise<void> {
         tweet.label = tweetLabel.label;
         try {
@@ -85,7 +91,18 @@ export default class TweetCrawlService implements ITweetCrawlService {
         }
     }
 
-    private async processJobs<T>(values: T[][], action: (values: T[]) => Promise<boolean>, delay: number) {
+    /**
+     * Given a matrix of values, runs a given function for each row of the matrix,
+     * waiting for a given delay between each row. If the operation reports that
+     * there was an issue processing the values by returning false, that row is reprocessed
+     * until processing is successful.
+     * @return A promise that resolves when all operations are done
+     */
+    private async processJobs<T>(
+        values: T[][],
+        action: (values: T[]) => Promise<boolean>,
+        delay: number
+    ): Promise<void> {
         return new Promise<void>(async (res, rej) => {
             let i = 0;
             const jobSetCount = values.length;
@@ -100,6 +117,11 @@ export default class TweetCrawlService implements ITweetCrawlService {
         });
     }
 
+    /**
+     * Splits a vector of values into a matrix of several rows and a given number of columns
+     * The last row may be of size less than the number of columns
+     * @return values bidimensional array
+     */
     private splitJobs(values: any[], count: number): any[][] {
         const result: any[][] = [];
         let jobSetCounter = 0;
@@ -114,6 +136,11 @@ export default class TweetCrawlService implements ITweetCrawlService {
         return result;
     }
 
+    /**
+     * Wraps and runs a function into a try catch block for exception handing
+     * Catches Twitters 429 Error code
+     * @return boolean indicating success or exception
+     */
     private async twitterExceptions(task: () => void): Promise<boolean> {
         try {
             await task();

@@ -49,12 +49,12 @@ export default class PythonProcess {
             this.unlock();
             this.clean();
         }
-    }
+    };
 
     public processErrorListener: (err: Buffer) => void = err => {
         console.log(err.toString());
-        throw new Error(err.toString());
-    }
+        //throw new Error(err.toString());
+    };
 
     private clean(): void {
         this.unlock = null;

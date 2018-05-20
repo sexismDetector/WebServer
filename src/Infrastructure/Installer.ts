@@ -91,7 +91,7 @@ async function prepareContainer(container: Container): Promise<Container> {
         .bind<PythonSpawnService>(Component.PythonSpawnService)
         .toConstantValue(
             new PythonSpawnService(
-                `${__dirname}/../../` + pythonModels.svm,
+                `${__dirname}/../../` + pythonModels.cnn,
                 [],
                 pythonModels.poolSize
             )

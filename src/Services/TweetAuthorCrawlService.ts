@@ -68,7 +68,7 @@ export default class TwitterAuthorCrawlService implements ITweetAuthorCrawlServi
         } catch (err) {
             console.log("No tweet found");
         }
-
+        if (result.replace == undefined) return "";
         result = result.replace("@", "");
         result = result.replace("<b>", "");
         result = result.replace("</b>", "");

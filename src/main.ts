@@ -20,6 +20,7 @@ class Main {
 
         const crawler = Main.container.get<ITweetAuthorCrawlService>(Component.TweetAuthorCrawlService);
         crawler.fixMissing();
+
         /*
         let server = new InversifyExpressServer(Main.container);
         server.setConfig(app => {

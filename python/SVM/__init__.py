@@ -47,5 +47,5 @@ def run_SVM(info):
 
 if __name__ == '__main__':
 
-
-    run_SVM(read_in())
+    while True:
+        run_SVM(read_in())
