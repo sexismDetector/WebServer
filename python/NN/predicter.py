@@ -1,39 +1,36 @@
+"""
+Script that makes predictions based on comments
 
+"""
+import sys, json
 from keras.preprocessing.text import Tokenizer
 from keras import preprocessing
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import load_model
 
-from sys import argv
-
-
 def Tokenize_New_Instance(new_string, text_length):
 
-	new_instance = []
+    new_instance = []
 
-	new_instance.append(new_string)
+    new_instance.append(new_string)
 
-	# create the tokenizer
-	new_tok= Tokenizer()
-	# fit the tokenizer on the documents
-	new_tok.fit_on_texts(new_instance)
+    # create the tokenizer
+    new_tok= Tokenizer()
+    # fit the tokenizer on the documents
+    new_tok.fit_on_texts(new_instance)
 
-	tokenized_text = pad_sequences( new_tok.texts_to_sequences(new_instance) , maxlen=text_length)
+    tokenized_text = pad_sequences( new_tok.texts_to_sequences(new_instance) , maxlen=text_length)
 
-	return tokenized_text
- 
+    return tokenized_text
 
-model =  load_model('/home/acevedo/Yonsei/Data_Mining/DataAnalyzer/src/sexism_classifier.h5')
 
-print("Loading Model Completed")
+model = load_model('sexism_classifier.h5')
 
-raw_text = str( argv[1])
-
-print("Given text is "+str( argv[1]))
-
-input_prediction = model.predict( Tokenize_New_Instance(raw_text, 200) )
-
-print("\n")
-
-print("Final Result")
-print(input_prediction[0][0])
+while True:
+    tweet = sys.stdin.readline()
+    user = sys.stdin.readline()
+    first_json = json.loads(tweet)
+    second_json = json.loads(user)
+    raw_text = first_json["text"]
+    input_prediction = model.predict(Tokenize_New_Instance(raw_text, 200))
+    print(input_prediction[0][0])
