@@ -24,7 +24,7 @@ def Tokenize_New_Instance(new_string, text_length):
     return tokenized_text
 
 
-model = load_model('sexism_classifier.h5')
+model = load_model('../../res/sexism_classifier.h5')
 
 while True:
     tweet = sys.stdin.readline()
