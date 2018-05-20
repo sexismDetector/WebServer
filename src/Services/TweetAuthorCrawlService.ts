@@ -22,7 +22,7 @@ export default class TwitterAuthorCrawlService implements ITweetAuthorCrawlServi
     ) {
         this.browser = new Nightmare({
             show: false,
-            gotoTimeout: 1000
+            waitTimeout: 2000
         });
         this.tweetRepo = tweetRepo;
         this.twitterData = twitterData;
@@ -36,7 +36,8 @@ export default class TwitterAuthorCrawlService implements ITweetAuthorCrawlServi
         for (let tweet of tweets) {
             const text = tweet.text;
             let url = this.twitterUrl;
-            url += encodeURI(this.cleanString(text));
+            const cleanText = this.cleanString(text);
+            url += encodeURI(cleanText);
             const username = await this.crawlUsername(url);
             if (username == undefined || username == "") {
                 this.notFoundLog.push(text);
@@ -60,7 +61,7 @@ export default class TwitterAuthorCrawlService implements ITweetAuthorCrawlServi
                 .evaluate(() => {
                     const tweet = $(".tweet");
                     const user = tweet.find(".username");
-                    if (user == undefined) return "";
+                    if (user == undefined || user == null) return "";
                     return user.html();
                 })
                 .then((val: string) => val);
@@ -75,7 +76,18 @@ export default class TwitterAuthorCrawlService implements ITweetAuthorCrawlServi
     }
 
     private cleanString(str: string) {
-        return str.replace(/[^\x00-\x7F]/g, "");
+        const cleanText = str.replace(/[^\x00-\x7F]/g, "");
+        return this.removeTokens(cleanText);
+    }
+
+    private removeTokens(text: string): string {
+        let result: string[] = [];
+        for (let token of text.split(" ")) {
+            const notUserMention = token.indexOf("@") == -1;  // The token is not another user mention
+            const notUrl = true;
+            if (notUserMention && notUrl) result.push(token);
+        }
+        return result.join(" ");
     }
 
 }
