@@ -45,9 +45,13 @@ export default class TweetCrawlService implements ITweetCrawlService {
     }
 
     public async storeUsers(): Promise<void> {
-        const userIds = await this.tweetRepo.getAllUserId();
-        console.log(userIds.length);
-        const separatedIds: string[][] = this.splitJobs(userIds, 25);
+        let missingIds: Promise<string[]> = this.tweetRepo.getAllUserId();
+        const existingIds: Promise<string[]> = this.userRepo.getAllUserId();
+        const idList = (await missingIds).filter(async id => {
+            return (await existingIds).indexOf(id) == -1;
+        });
+        console.log(idList.length);
+        const separatedIds: string[][] = this.splitJobs(idList, 25);
         this.processJobs(separatedIds, async (values) => {
             for (let id of values) {
                 if (! await this.twitterExceptions(async () => {

@@ -18,8 +18,7 @@ class Main {
     public static async main(): Promise<void> {
         Main.container = await container;
 
-        const crawler = Main.container.get<ITweetAuthorCrawlService>(Component.TweetAuthorCrawlService);
-        crawler.fixMissing();
+        Main.crawlTwitterUsers();
 
         /*
         let server = new InversifyExpressServer(Main.container);
