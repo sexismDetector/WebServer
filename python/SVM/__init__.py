@@ -59,6 +59,10 @@ if __name__ == '__main__':
     # load SVM and wait for the Node.JS module input
     txtSVM = load_trained_SVM("svm_rbf.sav")
 
-    while True:   
-        print(txtSVM.predict(parse_info(read_in())))
+    while True:
+        # print(
+        #     txtSVM.predict_proba(parse_info(read_in()))
+        # )
+        prob_of_not_sexist = txtSVM.predict_proba(parse_info(read_in()))[0][0]
+        print(1-prob_of_not_sexist)
         sys.stdout.flush()
