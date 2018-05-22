@@ -24,7 +24,7 @@ let container = new Container();
 
 import "../Controllers/ClassifierController";
 import PythonSpawnService from "../Services/PythonSpawnService";
-import PythonModelFiles from "../Models/PythonModelFIles";
+import PythonModelFiles from "../Models/PythonModelFiles";
 import ITweetAuthorCrawlService from "../Interfaces/ITweetAuthorCrawlService";
 import TweetAuthorCrawlService from "../Services/TweetAuthorCrawlService";
 import ITweetCleanService from "../Interfaces/ITweetCleanService";
@@ -93,15 +93,27 @@ async function prepareContainer(container: Container): Promise<Container> {
         .bind<ITweetCleanService>(Component.TweetCleanService)
         .to(TweetCleanService);
 
-    /*container
+    container
         .bind<PythonSpawnService>(Component.PythonSpawnService)
         .toConstantValue(
             new PythonSpawnService(
-                `${__dirname}/../../` + pythonModels.cnn,
+                `${__dirname}/../../` + pythonModels.nn,
                 [],
                 pythonModels.poolSize
             )
-        );*/
+        )
+        .whenTargetNamed("NN");
+
+    container
+        .bind<PythonSpawnService>(Component.PythonSpawnService)
+        .toConstantValue(
+            new PythonSpawnService(
+                `${__dirname}/../../` + pythonModels.svm,
+                [],
+                pythonModels.poolSize
+            )
+        )
+        .whenTargetNamed("SVM");
 
     console.log("Components Prepared!");
 

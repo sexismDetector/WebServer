@@ -29,8 +29,17 @@ export default class TweetCleanService implements ITweetCleanService {
             tweet.urban_score = score.urbanScore;
             tweet.oxford_score = score.oxfordScore;
             tweet.tweet_length = score.tweetLength;
-            await this.tweetRepo.update(tweet);
             console.log(`Updated ${++updates}`);
+        }
+        const batchSize = 0.9 * this.tweetRepo.PoolSize;
+        for (let i = 0; i != -1; i++) {
+            const promises: Promise<void>[] = [];
+            for (let j = 0;  j < batchSize; j++) {
+                const tweet = tweets[i * batchSize + j];
+                promises.push(this.tweetRepo.update(tweet));
+            }
+            await Promise.all(promises);
+            console.log(`Batch # ${batchSize * i} updated`);
         }
     }
 
