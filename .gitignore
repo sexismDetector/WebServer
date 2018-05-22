@@ -66,3 +66,4 @@ typings/
 
 res/
 config/
+python/SVM/TextSVM.py

@@ -1,4 +1,5 @@
 import sys, json, numpy as np
+import pickle
 from TextSVM import TextSVM
 
 # get the input from Node Server through stdin
@@ -29,7 +30,7 @@ def read_in():
 # execute classification to print!! 0(not sexist) or 1(sexist)
 
 
-def run_SVM(info):
+def parse_info(info):
     tweet = info[0]
     demographics = info[1]
     text = tweet["text"]
@@ -38,14 +39,26 @@ def run_SVM(info):
     followers_count = demographics["followers_count"]
     favorites_count = demographics["favorites_count"]
 
-    tsvm = TextSVM(text, user_id, screen_name, followers_count, favorites_count)
-
-    tsvm.predict()
+    # tsvm = TextSVM(text, user_id, screen_name, followers_count, favorites_count)
+    return text, user_id, screen_name, followers_count, favorites_count
+    # tsvm.predict()
     # return tsvm.predict()
+
+def load_trained_SVM(filename):
+
+    #load the trained SVM from pickle here.
+    #this is run only once per process.
+    loaded_model = pickle.load(open(filename, 'rb'))
+
+    return loaded_model
 
 
 
 if __name__ == '__main__':
 
+    # load SVM and wait for the Node.JS module input
+    txtSVM = load_trained_SVM("svm_rbf.sav")
 
-    run_SVM(read_in())
+    while True:   
+        print(txtSVM.predict(parse_info(read_in())))
+        sys.stdout.flush()
