@@ -9,6 +9,7 @@ import {InversifyExpressServer} from "inversify-express-utils";
 import * as Express from "express";
 import bodyParser = require("body-parser");
 import ITweetAuthorCrawlService from "./Interfaces/ITweetAuthorCrawlService";
+import ITweetCleanService from "./Interfaces/ITweetCleanService";
 
 class Main {
 
@@ -17,8 +18,8 @@ class Main {
 
     public static async main(): Promise<void> {
         Main.container = await container;
-
-        Main.crawlTwitterUsers();
+        Main.prepare();
+        //Main.crawlTwitterUsers();
 
         /*
         let server = new InversifyExpressServer(Main.container);
@@ -41,6 +42,11 @@ class Main {
     public static async json() {
         const jsonService = Main.container.get<JSONLoaderService>(Component.JSONLoaderService);
         jsonService.loadJSONKeys(__dirname + "/../res/words_dictionary.json");
+    }
+
+    public static async prepare() {
+        const cleanService = Main.container.get<ITweetCleanService>(Component.TweetCleanService);
+        cleanService.calculateTweetScores();
     }
 
     public static async labeledCsv() {

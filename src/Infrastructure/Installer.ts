@@ -27,6 +27,8 @@ import PythonSpawnService from "../Services/PythonSpawnService";
 import PythonModelFiles from "../Models/PythonModelFIles";
 import ITweetAuthorCrawlService from "../Interfaces/ITweetAuthorCrawlService";
 import TweetAuthorCrawlService from "../Services/TweetAuthorCrawlService";
+import ITweetCleanService from "../Interfaces/ITweetCleanService";
+import TweetCleanService from "../Services/TweetCleanService";
 
 async function prepareContainer(container: Container): Promise<Container> {
 
@@ -88,6 +90,10 @@ async function prepareContainer(container: Container): Promise<Container> {
         .to(JSONLoaderService);
 
     container
+        .bind<ITweetCleanService>(Component.TweetCleanService)
+        .to(TweetCleanService);
+
+    /*container
         .bind<PythonSpawnService>(Component.PythonSpawnService)
         .toConstantValue(
             new PythonSpawnService(
@@ -95,7 +101,7 @@ async function prepareContainer(container: Container): Promise<Container> {
                 [],
                 pythonModels.poolSize
             )
-        );
+        );*/
 
     console.log("Components Prepared!");
 

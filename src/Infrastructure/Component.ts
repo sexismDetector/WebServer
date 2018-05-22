@@ -17,5 +17,6 @@ export default class Component {
     public static readonly CSVLoaderService = "CSVLoaderService";
     public static readonly JSONLoaderService = "JSONLoaderService";
     public static readonly PythonSpawnService = "PythonSpawnService";
+    public static readonly TweetCleanService = "TweetCleanService";
 
 }
