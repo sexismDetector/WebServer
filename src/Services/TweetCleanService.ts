@@ -28,9 +28,9 @@ export default class TweetCleanService implements ITweetCleanService {
             const score = await this.tweetScore(tweet);
             const update: Tweet = {
                 text: tweet.text,
-                urban_score: tweet.urban_score,
-                oxford_score: tweet.oxford_score,
-                tweet_length: tweet.tweet_length
+                urban_score: score.urbanScore,
+                oxford_score: score.oxfordScore,
+                tweet_length: score.tweetLength
             };
             await this.tweetRepo.update(update);
             console.log(`Updated ${++updates}`);

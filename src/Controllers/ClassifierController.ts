@@ -63,6 +63,7 @@ export class ClassifierController implements Controller {
             user_id: twitterUser.user_id,
             screen_name: body.screen_name,
             followers_count: twitterUser.followers_count,
+            friends_count: twitterUser.friends_count,
             favorites_count: twitterUser.favorites_count
         };
         return [comment, user].map(obj => JSON.stringify(obj));
