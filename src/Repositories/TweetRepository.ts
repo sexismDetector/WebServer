@@ -68,8 +68,8 @@ export default class TweetRepository implements ITweetRepository {
         let key = tweet.text;
         key = key.replace(new RegExp("\'", "g"), "''");
         for (let key of Object.keys(tweet)) {
-            const value = (tweet as any)[key];
-            if (value == "" || value == null) {
+            const value: string | number = (tweet as any)[key];
+            if (value === "" || value === null) { // Double equal checks not good
                 delete (tweet as any)[key];
             }
         }
