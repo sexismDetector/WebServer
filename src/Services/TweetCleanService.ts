@@ -26,10 +26,13 @@ export default class TweetCleanService implements ITweetCleanService {
         console.log("Ready to roll: " + tweets.length);
         for (let tweet of tweets) {
             const score = await this.tweetScore(tweet);
-            tweet.urban_score = score.urbanScore;
-            tweet.oxford_score = score.oxfordScore;
-            tweet.tweet_length = score.tweetLength;
-            await this.tweetRepo.update(tweet);
+            const update: Tweet = {
+                text: tweet.text,
+                urban_score: tweet.urban_score,
+                oxford_score: tweet.oxford_score,
+                tweet_length: tweet.tweet_length
+            };
+            await this.tweetRepo.update(update);
             console.log(`Updated ${++updates}`);
         }
     }
