@@ -4,18 +4,18 @@ import pandas as pd
 from sklearn.svm import SVC
 from sklearn.model_selection import *
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
 import pickle
-from vaderSentiment import SentimentIntensityAnalyzer
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 
 #read SVM.csv from /res directory.
-svm_table = pd.read_csv("../../res/SVM.csv") #x1~x6 data is obtained as a result.
+svm_table = pd.read_csv("../../res/svm.csv") #x1~x6 data is obtained as a result.
 
 
 # row_count = svm_table.shape[0]   # shape returns a tuple of (rows, cols)  ==> shape[0] means num of rows
 
 x7 = []
-
 #compute x7: sentimental value
 analyzer = SentimentIntensityAnalyzer()
 for tweet in svm_table["text"]:  # run vaderSentiment on all tweets
@@ -67,6 +67,13 @@ lnr_score = svm_lnr.score(X_df_test,Y_df_test)
 poly_score = svm_poly.score(X_df_test,Y_df_test)
 sig_score = svm_sig.score(X_df_test,Y_df_test)
 
+#computing confusion matrix
+rbf_tn, rbf_fp, rbf_fn, rbf_tp = confusion_matrix(Y_df_test, rbf_predicted).ravel()
+lnr_tn, lnr_fp, lnr_fn, lnr_tp = confusion_matrix(Y_df_test, lnr_predicted).ravel()
+poly_tn, poly_fp, poly_fn, poly_tp = confusion_matrix(Y_df_test, poly_predicted).ravel()
+sig_tn, sig_fp, sig_fn, sig_tp = confusion_matrix(Y_df_test, sig_predicted).ravel()
+
+
 
 #Save the SVM as either (svm_rbf.sav) or (svm_poly.sav), (svm_linear.sav)
 pickle.dump(svm_rbf,open("svm_rbf.sav",'wb'))
@@ -78,15 +85,23 @@ pickle.dump(svm_sig,open("svm_sig.sav",'wb'))
 # inside the .txt file, print the accuracy score
 with open("svm_rbf.txt", "w") as f_rbf:
     f_rbf.write(rbf_score)
+    f_rbf.write(rbf_tn +" " + rbf_fp + " " + rbf_fn + " " + rbf_tp)
+    f_rbf.write(random_state_seed)
+
 
 with open("svm_lnr.txt", "w") as f_rbf:
     f_rbf.write(rbf_score)
+    f_rbf.write(rbf_tn + " " + rbf_fp + " " + rbf_fn + " " + rbf_tp)
+    f_rbf.write(random_state_seed)
 
 with open("svm_rbf.txt", "w") as f_rbf:
     f_rbf.write(rbf_score)
+    f_rbf.write(rbf_tn + " " + rbf_fp + " " + rbf_fn + " " + rbf_tp)
+    f_rbf.write(random_state_seed)
 
 with open("svm_rbf.txt", "w") as f_rbf:
     f_rbf.write(rbf_score)
-
+    f_rbf.write(rbf_tn + " " + rbf_fp + " " + rbf_fn + " " + rbf_tp)
+    f_rbf.write(random_state_seed)
 
 
