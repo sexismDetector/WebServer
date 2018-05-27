@@ -44,6 +44,16 @@ export default class TwitterUserRepository implements ITwitterUserRepository {
         return result;
     }
 
+    public async getAllUserId(): Promise<string[]> {
+        const result = await this.database.read<{user_id: string}>({
+            select: ["user_id"],
+            distinct: true,
+            from: "Users",
+            where: "true"
+        });
+        return result.map(obj => obj.user_id);
+    }
+
     public remove(id: string): Promise<void> {
         throw new NotImplementedError();
     }

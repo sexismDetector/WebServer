@@ -55,7 +55,7 @@ export default class TweetRepository implements ITweetRepository {
     }
 
     public async getAllUserId(): Promise<string[]> {
-        const result = await this.database.read<{user_id: string}>({
+        const result = await this.database.read<{ user_id: string }>({
             select: ["user_id"],
             distinct: true,
             from: "Tweets",
@@ -65,18 +65,20 @@ export default class TweetRepository implements ITweetRepository {
     }
 
     public async update(tweet: Tweet): Promise<void> {
+        let key = tweet.text;
+        key = key.replace(new RegExp("\'", "g"), "''");
         for (let key of Object.keys(tweet)) {
-            const value = (tweet as any)[key];
-            if (value == "" || value == null) {
+            const value: string | number = (tweet as any)[key];
+            if (value === "" || value === null) { // Double equal checks not good
                 delete (tweet as any)[key];
             }
         }
-        delete tweet.id;
+        delete tweet.text;
         await this.database.update({
             table: "Tweets",
             columns: Object.keys(tweet),
             values: Object.values(tweet),
-            where: `text = '${tweet.text}'`
+            where: `text = '${key}'`
         });
     }
 

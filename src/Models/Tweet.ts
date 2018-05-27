@@ -8,4 +8,7 @@ export default interface Tweet {
     source?: string;
     user_id?: string;
     reply_status_id?: string;
+    urban_score?: number;
+    oxford_score?: number;
+    tweet_length?: number;
 }

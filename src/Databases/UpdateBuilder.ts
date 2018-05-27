@@ -43,6 +43,7 @@ export default class UpdateBuilder extends AbstractQuery<void> {
     }
 
     protected async executeQuery(client: PoolClient): Promise<void> {
+        console.log(this.query);
         await client.query(this.query);
     }
 

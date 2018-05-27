@@ -24,9 +24,11 @@ let container = new Container();
 
 import "../Controllers/ClassifierController";
 import PythonSpawnService from "../Services/PythonSpawnService";
-import PythonModelFiles from "../Models/PythonModelFIles";
+import PythonModelFiles from "../Models/PythonModelFiles";
 import ITweetAuthorCrawlService from "../Interfaces/ITweetAuthorCrawlService";
 import TweetAuthorCrawlService from "../Services/TweetAuthorCrawlService";
+import ITweetCleanService from "../Interfaces/ITweetCleanService";
+import TweetCleanService from "../Services/TweetCleanService";
 
 async function prepareContainer(container: Container): Promise<Container> {
 
@@ -88,6 +90,21 @@ async function prepareContainer(container: Container): Promise<Container> {
         .to(JSONLoaderService);
 
     container
+        .bind<ITweetCleanService>(Component.TweetCleanService)
+        .to(TweetCleanService);
+
+    container
+        .bind<PythonSpawnService>(Component.PythonSpawnService)
+        .toConstantValue(
+            new PythonSpawnService(
+                `${__dirname}/../../` + pythonModels.nn,
+                [],
+                pythonModels.poolSize
+            )
+        )
+        .whenTargetNamed("NN");
+
+    container
         .bind<PythonSpawnService>(Component.PythonSpawnService)
         .toConstantValue(
             new PythonSpawnService(
@@ -95,7 +112,8 @@ async function prepareContainer(container: Container): Promise<Container> {
                 [],
                 pythonModels.poolSize
             )
-        );
+        )
+        .whenTargetNamed("SVM");
 
     console.log("Components Prepared!");
 

@@ -4,6 +4,7 @@ import NotImplementedError from "../Errors/NotImplementedError";
 import {inject, injectable} from "inversify";
 import IDatabaseDriver from "../Interfaces/IDatabaseDriver";
 import Component from "../Infrastructure/Component";
+import NotFoundError from "../Errors/NotFoundError";
 
 @injectable()
 export default class LabeledWordRepository implements ILabeledWordRepository {
@@ -28,8 +29,16 @@ export default class LabeledWordRepository implements ILabeledWordRepository {
         return this.database.PoolSize;
     }
 
-    public get(id: string): Promise<LabeledWord> {
-        throw new NotImplementedError();
+    public async get(word: string): Promise<LabeledWord> {
+        let key = word;
+        key = key.replace(new RegExp("\'", "g"), "''");
+        const result = await this.database.read<LabeledWord>({
+            select: ["*"],
+            from: "LabeledWords",
+            where: `word = '${key}'`
+        });
+        if (result.length == 0) throw new NotFoundError(word);
+        return result[0];
     }
 
     public getAll(): Promise<LabeledWord[]> {
