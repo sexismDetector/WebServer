@@ -37,9 +37,9 @@ model = load_model(os.path.dirname(os.path.abspath(__file__)) + '/../../res/sexi
 
 while True:
     tweet = sys.stdin.readline()
-    #user = sys.stdin.readline()
+    user = sys.stdin.readline()
     first_json = json.loads(tweet)
-    #second_json = json.loads(user)
+    #second_json = json.loads(user) 
     raw_text = first_json["text"]
 
     sentiment_of_text = get_sentiment_scores(raw_text)
@@ -56,13 +56,14 @@ while True:
 
     text_score_nn = input_prediction[0][0]
 
-    result = text_score_nn + text_negativity - text_positivity  
+    probability_score = text_score_nn + text_negativity - text_positivity  
 
-    if result > 0.55 :
-        text_label = 1
-    else:
-        text_label = 0
+    if probability_score > 1.0 :
+        probability_score = 1.0
 
-    print(text_label)
+    if probability_score < 0 :
+        probability_score =  0
+
+    print(probability_score)
 
     sys.stdout.flush()
