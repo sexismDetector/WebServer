@@ -29,6 +29,10 @@ export default class TwitterAuthorCrawlService implements ITweetAuthorCrawlServi
         this.notFoundLog = [];
     }
 
+    /**
+     * This method crawls a third party service to relate the tweet's text to the user that wrote it
+     * @return {Promise<void>}
+     */
     public async fixMissing(): Promise<void> {
         let i = 0;
         const tweets = await this.tweetRepo.getAllIf("user_id is null");
@@ -51,6 +55,11 @@ export default class TwitterAuthorCrawlService implements ITweetAuthorCrawlServi
         Filesystem.writeFileSync("../../res/notFoundLog.txt", this.notFoundLog.join("\n"));
     }
 
+    /**
+     * Launches a Nightmare object to query third party service for a username given the tweet text
+     * @param {string} url
+     * @return {Promise<string | undefined>}
+     */
     private async crawlUsername(url: string): Promise<string | undefined> {
         let result: string = "";
         try {
@@ -75,6 +84,11 @@ export default class TwitterAuthorCrawlService implements ITweetAuthorCrawlServi
         return result;
     }
 
+    /**
+     * Removes all non-Ascii characters from a string
+     * @param {string} str
+     * @return {string}
+     */
     private cleanString(str: string) {
         const cleanText = str.replace(/[^\x00-\x7F]/g, "");
         return this.removeTokens(cleanText);

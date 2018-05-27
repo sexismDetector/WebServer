@@ -15,6 +15,13 @@ export default class CSVLoaderService {
         this.tweetRepo = tweetRepo;
     }
 
+    /**
+     * Loads a batch of tweets into database
+     * @param {string} filePath CSV File path
+     * @param {(row: string) => boolean} filter Filter function to parse CSV
+     * @param {(tokens: string[]) => Tweet} parse Parse function to convert raw CSV line to Tweet object
+     * @return {Promise<void>}
+     */
     public async loadCSV(
         filePath: string,
         filter: (row: string) => boolean,
@@ -26,7 +33,7 @@ export default class CSVLoaderService {
         console.log(`Ready to load ${file.length} records`);
         const poolSize = this.tweetRepo.PoolSize;
         const batchSize = 0.9 * poolSize;
-        for (let i = 0; i != -1; i++) {
+        for (let i = 0; i != -1; i++) { // Upload batchSize records each time
             const promises: Promise<void>[] = [];
             for (let j = 0; j < batchSize; j++) {
                 if (i * batchSize + j >= file.length) return;
@@ -39,6 +46,12 @@ export default class CSVLoaderService {
         }
     }
 
+    /**
+     * Helper function to iterate and filter CSV
+     * @param {string[]} rows
+     * @param {(row: string) => boolean} filter
+     * @return {string[]}
+     */
     private filterCSV(rows: string[], filter: (row: string) => boolean): string[] {
         const filtered: string[] = [];
         for (let row of rows) {

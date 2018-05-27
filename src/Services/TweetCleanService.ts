@@ -7,6 +7,7 @@ import TweetScore from "../Models/TweetScore";
 import Tweet from "../Models/Tweet";
 import LabeledWord from "../Models/LabeledWord";
 import * as Filesystem from "fs-extra";
+import PostComment from "../Models/PostComment";
 
 @injectable()
 export default class TweetCleanService implements ITweetCleanService {
@@ -22,6 +23,11 @@ export default class TweetCleanService implements ITweetCleanService {
         this.labeledWordRepo = labeledWordRepo;
     }
 
+    /**
+     * Calculates score predictor values for each tweet in Tweets table.
+     * Then it updates each corresponding record with these values.
+     * @return {Promise<void>}
+     */
     public async calculateTweetScores(): Promise<void> {
         let updates = 0;
         const tweets = await this.tweetRepo.getAll();
@@ -39,7 +45,12 @@ export default class TweetCleanService implements ITweetCleanService {
         }
     }
 
-    private async tweetScore(tweet: Tweet): Promise<TweetScore> {
+    /**
+     * Calculates the corresponding predictor score for each Tweet
+     * @param {Tweet} tweet The tweet to be scored
+     * @return {Promise<TweetScore>} The predictor score of this tweet
+     */
+    public async tweetScore(tweet: Tweet | PostComment): Promise<TweetScore> {
         const tokens = tweet.text.split(" ");
         // const wordMap = await this.loadLabeledFromFile("");
         const score: TweetScore = {

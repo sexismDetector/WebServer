@@ -32,22 +32,22 @@ class Main {
 
     public static async crawlTwitterUsers() {
         const crawlService = Main.container.get<ITweetCrawlService>(Component.TweetCrawlerService);
-        crawlService.storeUsers();
+        await crawlService.storeUsers();
     }
 
     public static async json() {
         const jsonService = Main.container.get<JSONLoaderService>(Component.JSONLoaderService);
-        jsonService.loadJSONKeys(__dirname + "/../res/words_dictionary.json");
+        await jsonService.loadJSONKeys(__dirname + "/../res/words_dictionary.json");
     }
 
     public static async prepare() {
         const cleanService = Main.container.get<ITweetCleanService>(Component.TweetCleanService);
-        cleanService.calculateTweetScores();
+        await cleanService.calculateTweetScores();
     }
 
     public static async labeledCsv() {
         const csvService = Main.container.get<CSVLoaderService>(Component.CSVLoaderService);
-        csvService.loadCSV(__dirname + "/../res/labeled_data.csv", row => {
+        await csvService.loadCSV(__dirname + "/../res/labeled_data.csv", row => {
             const columnCount = row.split(",").length;
             return columnCount == 7;
         },tokens => {

@@ -15,13 +15,18 @@ export default class JSONLoaderService {
         this.wordRepo = wordRepo;
     }
 
+    /**
+     * Loads a the keys of a json file into db (LabeledWords)
+     * @param {string} filePath JSON File path
+     * @return {Promise<void>}
+     */
     public async loadJSONKeys(filePath: string): Promise<void> {
         const json: any = await Filesystem.readJson(filePath);
         console.log(`Ready to load  + ${Object.keys(json).length} keys`);
         const keys: string[] = Object.keys(json);
         const poolSize = this.wordRepo.PoolSize;
         const batchSize = 0.9 * poolSize;
-        for (let i = 0; i != -1; i++) {
+        for (let i = 0; i != -1; i++) { // Load batchSize words each time
             const promises: Promise<void>[] = [];
             for (let j = 0; j < batchSize; j++) {
                 if (i * batchSize + j > keys.length) return;
@@ -40,6 +45,11 @@ export default class JSONLoaderService {
         }
     }
 
+    /**
+     * Check for string nullity or emptyness
+     * @param {string} value Value to be checked
+     * @return {boolean}
+     */
     private isNullString(value: string): boolean {
         return value == null || value == undefined || value == "";
     }

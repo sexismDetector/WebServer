@@ -44,6 +44,12 @@ export default class TweetCrawlService implements ITweetCrawlService {
         }, 1000 * 30);
     }
 
+    /**
+     * Given that in the database the Tweets table has missing user id's related to its tweet,
+     *
+     * After getting each user-tweet relation, loads the found user into Users table.
+     * @return {Promise<void>}
+     */
     public async storeUsers(): Promise<void> {
         let missingIds: Promise<string[]> = this.tweetRepo.getAllUserId();
         const existingIds: Promise<string[]> = this.userRepo.getAllUserId();
@@ -142,7 +148,7 @@ export default class TweetCrawlService implements ITweetCrawlService {
 
     /**
      * Wraps and runs a function into a try catch block for exception handing
-     * Catches Twitters 429 Error code
+     * Catches Twitter's 429 Error code
      * @return boolean indicating success or exception
      */
     private async twitterExceptions(task: () => void): Promise<boolean> {

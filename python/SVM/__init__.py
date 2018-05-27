@@ -1,3 +1,4 @@
+import os
 import sys, json, numpy as np
 import pickle
 import pandas as pd
@@ -81,7 +82,7 @@ if __name__ == '__main__':
 
 
     # load SVM and wait for the Node.JS module input
-    txtSVM = load_trained_SVM("svm_rbf.sav")
+    txtSVM = load_trained_SVM(os.path.dirname(os.path.abspath(__file__)) + "/svm_rbf.sav")
 
     while True:
         # print(
@@ -89,7 +90,7 @@ if __name__ == '__main__':
         # )
         k = parse_info(read_in())
         # print(k)
-        prob_of_not_sexist = txtSVM.predict_proba(k.reshape(1,-1))[0][0]
+        prob_of_not_sexist = txtSVM.predict_proba(k.values.reshape(1,-1))[0][0]
         print(1-prob_of_not_sexist)
         sys.stdout.flush()
 
