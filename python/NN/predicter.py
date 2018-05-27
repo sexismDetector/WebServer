@@ -37,9 +37,9 @@ model = load_model(os.path.dirname(os.path.abspath(__file__)) + '/../../res/sexi
 
 while True:
     tweet = sys.stdin.readline()
-    #user = sys.stdin.readline()
+    user = sys.stdin.readline()
     first_json = json.loads(tweet)
-    #second_json = json.loads(user)
+    #second_json = json.loads(user) 
     raw_text = first_json["text"]
 
     sentiment_of_text = get_sentiment_scores(raw_text)
