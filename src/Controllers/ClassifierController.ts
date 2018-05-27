@@ -19,12 +19,6 @@ export class ClassifierController implements Controller {
     private supportVectorMachine: PythonSpawnService;
     private twitterService: ITwitterDataService;
 
-    private neuralNetPerformance: ModelPerformance;
-    private svmPerformance: ModelPerformance;
-
-    private nnWeight!: number;
-    private svmWeight!: number;
-
     public constructor(
         @inject(Component.PythonSpawnService) @named("NN") neuralNetwork: PythonSpawnService,
         @inject(Component.PythonSpawnService) @named("SVM") supportVectorMachine: PythonSpawnService,
@@ -33,15 +27,6 @@ export class ClassifierController implements Controller {
         this.neuralNetwork = neuralNetwork;
         this.supportVectorMachine = supportVectorMachine;
         this.twitterService = twitterService;
-        //this.neuralNetPerformance = this.loadPerformance("");
-        this.neuralNetPerformance = {
-            accuracy: 0.80
-        };
-        //this.svmPerformance = this.loadPerformance("");
-        this.svmPerformance = {
-            accuracy: 0.66
-        };
-        this.calcWeights();
     }
 
     @httpPost("/")
@@ -51,10 +36,7 @@ export class ClassifierController implements Controller {
     ): Promise<string> {
         const args = await this.makeArgs(body);
         const nnResponsePromise = this.neuralNetwork.calculate(args);
-        const svmResponsePromise = this.supportVectorMachine.calculate(args);
-        const nnResult = this.nnWeight * (await nnResponsePromise);
-        const svmResult = this.svmWeight * (await svmResponsePromise);
-        const result = nnResult + svmResult;
+        const result = await nnResponsePromise;
         return result.toString();
     }
 
@@ -77,12 +59,6 @@ export class ClassifierController implements Controller {
 
     private loadPerformance(file: string): ModelPerformance {
         throw new NotImplementedError();
-    }
-
-    private calcWeights() {
-        const sum = this.neuralNetPerformance.accuracy + this.svmPerformance.accuracy;
-        this.nnWeight = this.neuralNetPerformance.accuracy / sum;
-        this.svmWeight = this.svmPerformance.accuracy / sum;
     }
 
 }
