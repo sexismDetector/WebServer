@@ -47,7 +47,7 @@ def calculate_senti(text):
     # new_series = pd.Series([pos-neg, compound], index=["posneg", "compound"])
 
     # return new_series
-    return pos-neg, compound
+    return (pos-neg, compound)
 
 def parse_info(info):
     tweet = info[0]
@@ -57,14 +57,15 @@ def parse_info(info):
     screen_name = demographics["screen_name"]
     followers_count = demographics["followers_count"]
     favorites_count = demographics["favorites_count"]
+    friends_count = demographics["friends_count"]
     urban_sexist = demographics["urban_score"]
     oxford_sexist = demographics["oxford_score"]
     sex_words_ratio = demographics["sex_words_ratio"]
 
-    posneg, compound = calculate_senti(text)
-
+    (posneg, compound) = calculate_senti(text)
+    # print("compound:" + str(compound))
     # return text, user_id, screen_name, followers_count, favorites_count
-    return pd.Series(urban_sexist, oxford_sexist, followers_count, favorites_count, sex_words_ratio, posneg, compound)
+    return pd.Series([urban_sexist, oxford_sexist, followers_count, favorites_count, friends_count,sex_words_ratio, posneg, compound])
 
 def load_trained_SVM(filename):
 
@@ -86,7 +87,9 @@ if __name__ == '__main__':
         # print(
         #     txtSVM.predict_proba(parse_info(read_in()))
         # )
-        prob_of_not_sexist = txtSVM.predict_proba(parse_info(read_in()))[0][0]
+        k = parse_info(read_in())
+        # print(k)
+        prob_of_not_sexist = txtSVM.predict_proba(k.reshape(1,-1))[0][0]
         print(1-prob_of_not_sexist)
         sys.stdout.flush()
 
