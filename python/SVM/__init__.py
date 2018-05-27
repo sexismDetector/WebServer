@@ -61,7 +61,7 @@ def parse_info(info):
     oxford_sexist = demographics["oxford_score"]
     sex_words_ratio = demographics["sex_words_ratio"]
 
-    posneg , compound = calculate_senti(text)
+    posneg ,compound = calculate_senti(text)
 
     # return text, user_id, screen_name, followers_count, favorites_count
     return pd.Series(urban_sexist, oxford_sexist, followers_count, favorites_count, sex_words_ratio, posneg, compound)

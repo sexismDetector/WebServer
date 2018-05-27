@@ -132,24 +132,24 @@ sig_tn, sig_fp, sig_fn, sig_tp = confusion_matrix(Y_df_test, sig_predicted).rave
 #To maintain the accuaracy info of each model saved as .sav, output [model_name].txt and
 # inside the .txt file, print the accuracy score
 with open("svm_rbf.txt", "w") as f_rbf:
-    f_rbf.write(rbf_score)
-    f_rbf.write(rbf_tn +" " + rbf_fp + " " + rbf_fn + " " + rbf_tp)
-    f_rbf.write(random_state_seed)
+    f_rbf.write("accu: " + str(rbf_score))
+    f_rbf.write(str(rbf_tn) +" " + str(rbf_fp) + " " + str(rbf_fn) + " " + str(rbf_tp))
+    f_rbf.write(str(random_state_seed))
 
 
 with open("svm_lnr.txt", "w") as f_rbf:
-    f_rbf.write(rbf_score)
-    f_rbf.write(rbf_tn + " " + rbf_fp + " " + rbf_fn + " " + rbf_tp)
-    f_rbf.write(random_state_seed)
+    f_rbf.write(str(lnr_score))
+    f_rbf.write(str(lnr_tn) + " " + str(lnr_fp) + " " + str(lnr_fn) + " " + str(lnr_tp))
+    f_rbf.write(str(random_state_seed))
 
-with open("svm_rbf.txt", "w") as f_rbf:
-    f_rbf.write(rbf_score)
-    f_rbf.write(rbf_tn + " " + rbf_fp + " " + rbf_fn + " " + rbf_tp)
-    f_rbf.write(random_state_seed)
+with open("svm_poly.txt", "w") as f_rbf:
+    f_rbf.write(str(poly_score))
+    f_rbf.write(str(poly_tn) + " " + str(poly_fp) + " " + str(poly_fn) + " " + str(poly_tp))
+    f_rbf.write(str(random_state_seed))
 
-with open("svm_rbf.txt", "w") as f_rbf:
-    f_rbf.write(rbf_score)
-    f_rbf.write(rbf_tn + " " + rbf_fp + " " + rbf_fn + " " + rbf_tp)
-    f_rbf.write(random_state_seed)
+with open("svm_sig.txt", "w") as f_rbf:
+    f_rbf.write(str(sig_score))
+    f_rbf.write(str(sig_tn) + " " + str(sig_fp) + " " + str(sig_fn) + " " + str(sig_tp))
+    f_rbf.write(str(random_state_seed))
 
 
