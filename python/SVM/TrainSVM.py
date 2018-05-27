@@ -24,7 +24,7 @@ if os.path.isfile("X_df.csv") is not True:
     # print(svm_table)
     # x7 = pd.DataFrame(columns=["neg", "neu", "pos", "compound"])
     # print(svm_table.isnull().sum().sum())
-    x7_df = pd.DataFrame(columns=["neg", "neu", "pos", "compound"])
+    x7_df = pd.DataFrame(columns=["posneg", "compound"])
 
     #compute x7: sentimental value
     analyzer = SentimentIntensityAnalyzer()
@@ -35,7 +35,7 @@ if os.path.isfile("X_df.csv") is not True:
         neu = senti['neu']
         pos = senti['pos']
         compound = senti['compound']
-        new_series = pd.Series([neg, neu, pos, compound], index=["neg", "neu","pos","compound"])
+        new_series = pd.Series([pos-neg, compound], index=["posneg", "compound"])
         # print("new:")
         # print(new_series)
         # dict1.update({"neg" : neg, "pos" : pos, "compound" : compound})
@@ -60,7 +60,9 @@ if os.path.isfile("X_df.csv") is not True:
     # X_df = result_table[list(result_table.columns[1:6]result_table.columns[7]] # take everything from x1 ~x7 as our X, and fit it to 'label'
     # print(result_table)
 
-    X_df = result_table[['urban_score','oxford_score','follower_score','favorite_score','friend_score','sex_words_ratio','neg','neu', 'pos', 'compound']]
+    # X_df = result_table[['urban_score','oxford_score','follower_score','favorite_score','friend_score','sex_words_ratio','neg','neu', 'pos', 'compound']]
+    X_df = result_table[['urban_score','oxford_score','follower_score','favorite_score','friend_score','sex_words_ratio','posneg', 'compound']]
+
     print(X_df)
 
     # Note that  .loc[: , 'x1':'x7'] may not work because x7 was concatenated after 'label' col of the original .csv

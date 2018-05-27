@@ -1,6 +1,8 @@
 import sys, json, numpy as np
 import pickle
-
+import pandas as pd
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import pandas
 # get the input from Node Server through stdin
 
 
@@ -28,6 +30,24 @@ def read_in():
 
 # execute classification to print!! 0(not sexist) or 1(sexist)
 
+def calculate_senti(text):
+
+    x7_df = pd.DataFrame(columns=["posneg", "compound"])
+
+    # compute x7: sentimental value
+    analyzer = SentimentIntensityAnalyzer()
+
+    senti = analyzer.polarity_scores(text)
+    # print(neg)
+    neg = senti['neg']
+    neu = senti['neu']
+    pos = senti['pos']
+    compound = senti['compound']
+
+    # new_series = pd.Series([pos-neg, compound], index=["posneg", "compound"])
+
+    # return new_series
+    return pos-neg, compound
 
 def parse_info(info):
     tweet = info[0]
@@ -37,11 +57,14 @@ def parse_info(info):
     screen_name = demographics["screen_name"]
     followers_count = demographics["followers_count"]
     favorites_count = demographics["favorites_count"]
+    urban_sexist = demographics["urban_score"]
+    oxford_sexist = demographics["oxford_score"]
+    sex_words_ratio = demographics["sex_words_ratio"]
 
-    # tsvm = TextSVM(text, user_id, screen_name, followers_count, favorites_count)
-    return text, user_id, screen_name, followers_count, favorites_count
-    # tsvm.predict()
-    # return tsvm.predict()
+    posneg , compound = calculate_senti(text)
+
+    # return text, user_id, screen_name, followers_count, favorites_count
+    return pd.Series(urban_sexist, oxford_sexist, followers_count, favorites_count, sex_words_ratio, posneg, compound)
 
 def load_trained_SVM(filename):
 
