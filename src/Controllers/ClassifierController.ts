@@ -33,8 +33,14 @@ export class ClassifierController implements Controller {
         this.neuralNetwork = neuralNetwork;
         this.supportVectorMachine = supportVectorMachine;
         this.twitterService = twitterService;
-        this.neuralNetPerformance = this.loadPerformance("");
-        this.svmPerformance = this.loadPerformance("");
+        //this.neuralNetPerformance = this.loadPerformance("");
+        this.neuralNetPerformance = {
+            accuracy: 0.80
+        };
+        //this.svmPerformance = this.loadPerformance("");
+        this.svmPerformance = {
+            accuracy: 0.66
+        };
         this.calcWeights();
     }
 
@@ -43,12 +49,12 @@ export class ClassifierController implements Controller {
         @requestBody() body: ClassifyRequestBody,
         @response() res: Response
     ): Promise<string> {
-        let result = 0;
         const args = await this.makeArgs(body);
         const nnResponsePromise = this.neuralNetwork.calculate(args);
         const svmResponsePromise = this.supportVectorMachine.calculate(args);
-        result += this.nnWeight * (await nnResponsePromise);
-        result += this.svmWeight * (await svmResponsePromise);
+        const nnResult = this.nnWeight * (await nnResponsePromise);
+        const svmResult = this.svmWeight * (await svmResponsePromise);
+        const result = nnResult + svmResult;
         return result.toString();
     }
 

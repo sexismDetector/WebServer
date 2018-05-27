@@ -18,10 +18,7 @@ class Main {
 
     public static async main(): Promise<void> {
         Main.container = await container;
-        Main.prepare();
-        //Main.crawlTwitterUsers();
 
-        /*
         let server = new InversifyExpressServer(Main.container);
         server.setConfig(app => {
             app.use(bodyParser.json());
@@ -31,7 +28,6 @@ class Main {
         const port = 3000;
         app.listen(port);
         console.log(`Listening on port ${port}`);
-        */
     }
 
     public static async crawlTwitterUsers() {
