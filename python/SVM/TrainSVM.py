@@ -63,10 +63,10 @@ if os.path.isfile("X_df.csv") is not True:
     # X_df = result_table[['urban_score','oxford_score','follower_score','favorite_score','friend_score','sex_words_ratio','neg','neu', 'pos', 'compound']]
     X_df = result_table[['urban_score','oxford_score','follower_score','favorite_score','friend_score','sex_words_ratio','posneg', 'compound']]
 
-    print(X_df)
+    # print(X_df)
 
     # Note that  .loc[: , 'x1':'x7'] may not work because x7 was concatenated after 'label' col of the original .csv
-    Y_df = result_table['label']
+    Y_df = result_table[['label']]
 
     # the reason I specified the random_state int is because I want to split of the df to be reproducible.
     # For future reference, I am saving the value of random_state_seed along with the accuracy info in [model].txt.
@@ -132,24 +132,61 @@ sig_tn, sig_fp, sig_fn, sig_tp = confusion_matrix(Y_df_test, sig_predicted).rave
 #To maintain the accuaracy info of each model saved as .sav, output [model_name].txt and
 # inside the .txt file, print the accuracy score
 with open("svm_rbf.txt", "w") as f_rbf:
-    f_rbf.write("accu: " + str(rbf_score))
-    f_rbf.write(str(rbf_tn) +" " + str(rbf_fp) + " " + str(rbf_fn) + " " + str(rbf_tp))
-    f_rbf.write(str(random_state_seed))
+    f_rbf.write("accu: "+str(rbf_score)+"\n")
+    f_rbf.write(str(rbf_tn) +" " + str(rbf_fp) + " " + str(rbf_fn) + " " + str(rbf_tp)+"\n")
+    tpr = float(rbf_tp / (rbf_tp + rbf_fn))
+    tnr = float(rbf_tn / (rbf_tn + rbf_fp))
+
+    f_rbf.write("TPR: " + str(tpr)+"\n")
+    f_rbf.write("TNR: " + str(tnr)+"\n")
+    f_rbf.write("FPR: " + str(1-tpr)+"\n")
+    f_rbf.write("FNR: " + str(1-tnr)+"\n")
+    f_rbf.write("FDR: " + str(float(rbf_fp/(rbf_fp+rbf_tp)))+"\n")
+    f_rbf.write("FOR: " + str(float(rbf_fn/(rbf_fn+rbf_tn)))+"\n")
+
+    f_rbf.write("random seed: "+str(random_state_seed))
 
 
 with open("svm_lnr.txt", "w") as f_rbf:
-    f_rbf.write(str(lnr_score))
-    f_rbf.write(str(lnr_tn) + " " + str(lnr_fp) + " " + str(lnr_fn) + " " + str(lnr_tp))
+    f_rbf.write("accu: "+ str(lnr_score)+"\n")
+    f_rbf.write(str(lnr_tn) + " " + str(lnr_fp) + " " + str(lnr_fn) + " " + str(lnr_tp)+"\n")
+    tpr = float(lnr_tp / (lnr_tp + lnr_fn))
+    tnr = float(lnr_tn / (lnr_tn + lnr_fp))
+
+    f_rbf.write("TPR: " + str(tpr)+"\n")
+    f_rbf.write("TNR: " + str(tnr)+"\n")
+    f_rbf.write("FPR: " + str(1-tpr)+"\n")
+    f_rbf.write("FNR: " + str(1-tnr)+"\n")
+    f_rbf.write("FDR: " + str(float(lnr_fp/(lnr_fp+lnr_tp)))+"\n")
+    f_rbf.write("FOR: " + str(float(lnr_fn/(lnr_fn+lnr_tn)))+"\n")
     f_rbf.write(str(random_state_seed))
 
 with open("svm_poly.txt", "w") as f_rbf:
-    f_rbf.write(str(poly_score))
-    f_rbf.write(str(poly_tn) + " " + str(poly_fp) + " " + str(poly_fn) + " " + str(poly_tp))
+    f_rbf.write("accu: "+ str(poly_score)+"\n")
+    f_rbf.write(str(poly_tn) + " " + str(poly_fp) + " " + str(poly_fn) + " " + str(poly_tp)+"\n")
+    tpr = float(poly_tp / (poly_tp + poly_fn))
+    tnr = float(poly_tn / (poly_tn + poly_fp))
+
+    f_rbf.write("TPR: " + str(tpr)+"\n")
+    f_rbf.write("TNR: " + str(tnr)+"\n")
+    f_rbf.write("FPR: " + str(1-tpr)+"\n")
+    f_rbf.write("FNR: " + str(1-tnr)+"\n")
+    f_rbf.write("FDR: " + str(float(poly_fp/(poly_fp+poly_tp)))+"\n")
+    f_rbf.write("FOR: " + str(float(poly_fn/(poly_fn+poly_tn)))+"\n")
     f_rbf.write(str(random_state_seed))
 
 with open("svm_sig.txt", "w") as f_rbf:
-    f_rbf.write(str(sig_score))
-    f_rbf.write(str(sig_tn) + " " + str(sig_fp) + " " + str(sig_fn) + " " + str(sig_tp))
-    f_rbf.write(str(random_state_seed))
+    f_rbf.write("accu: "+ str(sig_score)+"\n")
+    f_rbf.write(str(sig_tn) + " " + str(sig_fp) + " " + str(sig_fn) + " " + str(sig_tp)+"\n")
+    tpr = float(sig_tp / (sig_tp + sig_fn))
+    tnr = float(sig_tn / (rbf_tn + sig_fp))
+
+    f_rbf.write("TPR: " + str(tpr)+"\n")
+    f_rbf.write("TNR: " + str(tnr)+"\n")
+    f_rbf.write("FPR: " + str(1-tpr)+"\n")
+    f_rbf.write("FNR: " + str(1-tnr)+"\n")
+    f_rbf.write("FDR: " + str(float(sig_fp/(sig_fp+sig_tp)))+"\n")
+    f_rbf.write("FOR: " + str(float(sig_fn/(sig_fn+sig_tn)))+"\n")
+    f_rbf.write(str(random_state_seed)+"\n")
 
 
