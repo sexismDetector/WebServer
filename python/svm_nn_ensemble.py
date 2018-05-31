@@ -22,7 +22,7 @@ while True:
     tweet = sys.stdin.readline()
     user = sys.stdin.readline()
     first_json = json.loads(tweet)
-    second_json = json.loads(user) 
+    #second_json = json.loads(user) 
     
     ### BEGINNING OF ESEMBLE CODE ###
 
