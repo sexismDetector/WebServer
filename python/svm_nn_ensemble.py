@@ -22,8 +22,8 @@ the_nn_model_path = script_path+  "/NN/nn_model.py"
 
 sys.path.append(the_nn_model_path )
 
-
-print(os.getcwd())
+rn = os.getcwd()
+print("right now "+rn)
 from  nn_model import nn_ensemble_model
 
 sys.path.append(script_path )
