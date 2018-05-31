@@ -1,7 +1,7 @@
 """
 Neural network model
 
-Go to line  69 for the actual ensemble 
+Go to line  120 for the actual ensemble 
 """
 
 import os
@@ -20,6 +20,16 @@ from keras.models import load_model
 
 
 from keras.preprocessing.text import Tokenizer
+
+# For reading the json
+import sys, json
+
+# For using the models
+from sklearn.model_selection import *
+from keras.wrappers.scikit_learn import KerasClassifier
+from sklearn.ensemble import  VotingClassifier
+import pandas
+import pickle
 
 analyser = SentimentIntensityAnalyzer()
 def get_sentiment_scores(sentence):
@@ -68,42 +78,56 @@ def nn_ensemble_model(raw_text):
     
     return result
 
+def calculate_senti(text):
+
+    x7_df = pd.DataFrame(columns=["posneg", "compound"])
+
+    # compute x7: sentimental value
+    analyzer = SentimentIntensityAnalyzer()
+
+    senti = analyzer.polarity_scores(text)
+    # print(neg)
+    neg = senti['neg']
+    neu = senti['neu']
+    pos = senti['pos']
+    compound = senti['compound']
+
+    # new_series = pd.Series([pos-neg, compound], index=["posneg", "compound"])
+
+    # return new_series
+    return (pos-neg, compound)
+
+def parse_info(info):
+    tweet = info[0]
+    demographics = info[1]
+    text = tweet["text"]
+    user_id = demographics["user_id"]
+    screen_name = demographics["screen_name"]
+    followers_count = demographics["followers_count"]
+    favorites_count = demographics["favorites_count"]
+    friends_count = demographics["friends_count"]
+    urban_sexist = demographics["urban_score"]
+    oxford_sexist = demographics["oxford_score"]
+    sex_words_ratio = demographics["sex_words_ratio"]
+
+    (posneg, compound) = calculate_senti(text)
+    # print("compound:" + str(compound))
+    # return text, user_id, screen_name, followers_count, favorites_count
+    return pd.Series([urban_sexist, oxford_sexist, followers_count, favorites_count, friends_count,sex_words_ratio, posneg, compound])
+
+
 """
 Ensemble using SVM and NN for sexist commennts binary classification 
 
 """ 
-# For reading the json
-import sys, json
-
-# For using the models
-from sklearn.model_selection import *
-from keras.wrappers.scikit_learn import KerasClassifier
-from sklearn.ensemble import  VotingClassifier
-import pandas
-import pickle
 
 print(nn_ensemble_model("you are a slut"))
-
-script_path = os.path.dirname(os.path.abspath(__file__))
-
-print("\t folder: " + script_path)
-
-the_nn_model_path = script_path+  "/NN"
-
-os.chdir(the_nn_model_path)
-
-rn = os.getcwd()
-print("right now "+rn)
-from  nn_model import nn_ensemble_model
-
-os.chdir(script_path)
-
-
 
 svm_path = script_path+"/SVM/svm_rbf.sav"
 
 txtSVM  = pickle.load(open(svm_path, 'rb'))
 
+"""
 
 #Creating sci-kit learn object for classifier voting
 sk_nn_classifier = KerasClassifier(build_fn = nn_ensemble_model)
@@ -118,22 +142,33 @@ estimators.append(('nn', model2))
 ensemble = VotingClassifier(estimators)
 
 
+"""
+
 while True:
 
     #reading the jsons
-    tweet = sys.stdin.readline()
-    user = sys.stdin.readline()
-    first_json = json.loads(tweet)
-    #second_json = json.loads(user) 
+    line1 = sys.stdin.readline()
+    tweet = json.loads(line1)
+
+    line2 = sys.stdin.readline()
+    demographics = json.loads(line2)
     
     ### BEGINNING OF ESEMBLE CODE ###
 
+    raw_text = tweet["text"]
+
+    nn_score = nn_ensemble_model(raw_text)
+
+    svm_input = parse_info( [tweet, demographics] )
+
+    svm_score =  1 - txtSVM.predict_proba(svm_input.values.reshape(1,-1))[0][0]    
+
+    ensemble_score = 0.5*svm_score+0.5*nn_score
+
+    print(ensemble_score)
 
 
-    print(ensemble)
 
-
-
-   
-    #### END OF ENSEMBLE CODE ####
     sys.stdout.flush()
+
+    #### END OF ENSEMBLE CODE ####
