@@ -50,7 +50,7 @@ export class ClassifierController implements Controller {
     ): Promise<string> {
         const args = await this.makeArgs(body);
         args.forEach(arg => console.log(arg));
-        const nnResponsePromise = this.supportVectorMachine.calculate(args);
+        const nnResponsePromise = this.neuralNetwork.calculate(args);
         const result = await nnResponsePromise;
         return result.toString();
     }
