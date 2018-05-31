@@ -20,13 +20,13 @@ print("\t folder: " + script_path)
 
 the_nn_model_path = script_path+  "/NN/nn_model.py"
 
-sys.path.append(the_nn_model_path )
+os.chdir(the_nn_model_path)
 
 rn = os.getcwd()
 print("right now "+rn)
 from  nn_model import nn_ensemble_model
 
-sys.path.append(script_path )
+os.chdir(script_path)
 
 
 
