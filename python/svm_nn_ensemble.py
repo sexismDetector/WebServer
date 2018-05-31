@@ -30,7 +30,7 @@ while True:
 
     svm_path = script_path+"/SVM/svm_rbf.sav"
 
-    txtSVM loaded_model = pickle.load(open(svm_path, 'rb'))
+    txtSVM  = pickle.load(open(svm_path, 'rb'))
 
 
     #Creating sci-kit learn object for classifier voting
