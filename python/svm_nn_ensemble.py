@@ -1,9 +1,78 @@
 """
+Neural network model
+
+Go to line  69 for the actual ensemble 
+"""
+
+import os
+
+from keras.preprocessing.text import Tokenizer
+from keras import preprocessing
+from keras.preprocessing.sequence import pad_sequences
+from keras.models import load_model
+
+#### Code Begins
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
+from keras import preprocessing
+from keras.preprocessing.sequence import pad_sequences
+from keras.models import load_model
+
+
+from keras.preprocessing.text import Tokenizer
+
+analyser = SentimentIntensityAnalyzer()
+def get_sentiment_scores(sentence):
+    snt = analyser.polarity_scores(sentence)
+    return snt
+
+ 
+def Tokenize_New_Instance(new_string, text_length):
+
+    new_instance = []
+
+    new_instance.append(new_string)
+
+    # create the tokenizer
+    new_tok= Tokenizer()
+    # fit the tokenizer on the documents
+    new_tok.fit_on_texts(new_instance)
+
+    tokenized_text = pad_sequences( new_tok.texts_to_sequences(new_instance) , maxlen=text_length)
+
+    return tokenized_text
+ 
+script_path = os.path.dirname(os.path.abspath(__file__))
+
+#script_path = script_path.replace('python','')
+#model = load_model(script_path+'res/sexism_classifier.h5')
+
+
+
+# creating path for testing in my machine
+script_path = script_path.replace('WebServer/python','')
+model = load_model(script_path+'rnn/trial/decente.h5')
+
+def nn_ensemble_model(raw_text):
+    sentiment_of_text = get_sentiment_scores(raw_text)
+
+    text_negativity = sentiment_of_text['neg']
+
+    text_positivity = sentiment_of_text['pos']
+
+    input_prediction = model.predict( Tokenize_New_Instance(raw_text, 50) )
+
+    text_score_nn = input_prediction[0][0]
+
+    result = text_score_nn + text_negativity - text_positivity  
+    
+    return result
+
+"""
 Ensemble using SVM and NN for sexist commennts binary classification 
 
 """ 
 # For reading the json
-import os
 import sys, json
 
 # For using the models
@@ -13,6 +82,7 @@ from sklearn.ensemble import  VotingClassifier
 import pandas
 import pickle
 
+print(nn_ensemble_model("you are a slut"))
 
 script_path = os.path.dirname(os.path.abspath(__file__))
 
