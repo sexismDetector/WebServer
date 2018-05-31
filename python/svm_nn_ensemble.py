@@ -18,11 +18,14 @@ script_path = os.path.dirname(os.path.abspath(__file__))
 
 print("\t folder: " + script_path)
 
-the_nn_model = script_path+  "/NN/nn_model.py"
+the_nn_model_path = script_path+  "/NN/nn_model.py"
 
-print("\t folder: " + the_nn_model)
+sys.path.append(the_nn_model_path )
 
-from  script_path+  "/NN/nn_model.py" import nn_ensemble_model
+from  nn_model import nn_ensemble_model
+
+sys.path.append(script_path )
+
 
 
 svm_path = script_path+"/SVM/svm_rbf.sav"
