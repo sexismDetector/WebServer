@@ -20,6 +20,8 @@ print("\t folder: " + script_path)
 
 the_nn_model = script_path+  "/NN/nn_model.py"
 
+print("\t folder: " + the_nn_model)
+
 from  the_nn_model import nn_ensemble_model
 
 
