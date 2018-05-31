@@ -123,7 +123,7 @@ Ensemble using SVM and NN for sexist commennts binary classification
 
 print(nn_ensemble_model("you are a slut"))
 
-svm_path = script_path+"SVM/svm_rbf.sav"
+svm_path = script_path+"/python/SVM/svm_rbf.sav"
 
 txtSVM  = pickle.load(open(svm_path, 'rb'))
 
