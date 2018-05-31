@@ -13,7 +13,32 @@ from sklearn.ensemble import  VotingClassifier
 import pandas
 import pickle
 
-from  NN import nn_ensemble_model
+
+script_path = os.path.dirname(os.path.abspath(__file__))
+
+print("\t folder: " + script_path)
+
+the_nn_model = script_path+  "/NN/nn_model.py"
+
+from  the_nn_model import nn_ensemble_model
+
+
+svm_path = script_path+"/SVM/svm_rbf.sav"
+
+txtSVM  = pickle.load(open(svm_path, 'rb'))
+
+
+#Creating sci-kit learn object for classifier voting
+sk_nn_classifier = KerasClassifier(build_fn = nn_ensemble_model)
+
+estimators = []
+model1 = txtSVM
+estimators.append(('svm', model1))
+model2 = sk_nn_classifier
+estimators.append(('nn', model2))
+
+# create the Voting Classifier ensemble model
+ensemble = VotingClassifier(estimators)
 
 
 while True:
@@ -26,24 +51,7 @@ while True:
     
     ### BEGINNING OF ESEMBLE CODE ###
 
-    script_path = os.path.dirname(os.path.abspath(__file__))
 
-    svm_path = script_path+"/SVM/svm_rbf.sav"
-
-    txtSVM  = pickle.load(open(svm_path, 'rb'))
-
-
-    #Creating sci-kit learn object for classifier voting
-    sk_nn_classifier = KerasClassifier(build_fn = nn_ensemble_model)
-
-    estimators = []
-    model1 = txtSVM
-    estimators.append(('svm', model1))
-    model2 = sk_nn_classifier
-    estimators.append(('nn', model2))
-
-    # create the Voting Classifier ensemble model
-    ensemble = VotingClassifier(estimators)
 
     print(ensemble)
 
