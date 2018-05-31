@@ -13,7 +13,7 @@ from sklearn.ensemble import  VotingClassifier
 import pandas
 import pickle
 
-from  nn_model import nn_ensemble_model
+from  NN import nn_ensemble_model
 
 
 while True:
