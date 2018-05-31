@@ -18,7 +18,7 @@ script_path = os.path.dirname(os.path.abspath(__file__))
 
 print("\t folder: " + script_path)
 
-the_nn_model_path = script_path+  "/NN/nn_model.py"
+the_nn_model_path = script_path+  "/NN"
 
 os.chdir(the_nn_model_path)
 
