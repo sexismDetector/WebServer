@@ -44,7 +44,6 @@ script_path = os.path.dirname(os.path.abspath(__file__))
 script_path = script_path.replace('python','')
 model = load_model(script_path+'res/sexism_classifier.h5')
 
-
 def nn_ensemble_model(raw_text):
     sentiment_of_text = get_sentiment_scores(raw_text)
 
