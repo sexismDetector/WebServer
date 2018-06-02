@@ -92,10 +92,12 @@ svm_fit_lnr = SVC(kernel='linear', probability=True)
 svm_fit_poly = SVC(kernel='poly', probability=True)
 svm_fit_sig= SVC(kernel='sigmoid', probability=True)
 
-svm_rbf = svm_fit_rbf.fit(X_df_train, Y_df_train.loc[:,"label"])
-svm_lnr = svm_fit_lnr.fit(X_df_train, Y_df_train.loc[:,"label"])
-svm_poly = svm_fit_poly.fit(X_df_train, Y_df_train.loc[:,"label"])
-svm_sig = svm_fit_sig.fit(X_df_train, Y_df_train.loc[:,"label"])
+Y_df_train = Y_df_train.loc[:,"label"]
+
+svm_rbf = svm_fit_rbf.fit(X_df_train, Y_df_train)
+svm_lnr = svm_fit_lnr.fit(X_df_train, Y_df_train)
+svm_poly = svm_fit_poly.fit(X_df_train, Y_df_train)
+svm_sig = svm_fit_sig.fit(X_df_train, Y_df_train)
 
 # rbf_score = cross_val_predict(svm_rbf,X_df_test,Y_df_test)
 # lnr_score = cross_val_predict(svm_lnr,X_df_test,Y_df_test)
@@ -108,12 +110,17 @@ lnr_predicted = svm_lnr.predict(X_df_test)
 poly_predicted = svm_poly.predict(X_df_test)
 sig_predicted = svm_sig.predict(X_df_test)
 
-# CAUTION: the .score method per se uses the prediction from  the SVC object that went through .fit() internally.
-rbf_score = svm_rbf.score(X_df_test,Y_df_test.loc[:,"label"])
-lnr_score = svm_lnr.score(X_df_test,Y_df_test.loc[:,"label"])
-poly_score = svm_poly.score(X_df_test,Y_df_test.loc[:,"label"])
-sig_score = svm_sig.score(X_df_test,Y_df_test.loc[:,"label"])
+Y_df_test =Y_df_test.loc[:,"label"]
 
+# CAUTION: the .score method per se uses the prediction from  the SVC object that went through .fit() internally.
+# rbf_score = svm_rbf.score(X_df_test,Y_df_test.loc[:,"label"])
+# lnr_score = svm_lnr.score(X_df_test,Y_df_test.loc[:,"label"])
+# poly_score = svm_poly.score(X_df_test,Y_df_test.loc[:,"label"])
+# sig_score = svm_sig.score(X_df_test,Y_df_test.loc[:,"label"])
+rbf_score = svm_rbf.score(X_df_test,Y_df_test)
+lnr_score = svm_lnr.score(X_df_test,Y_df_test)
+poly_score = svm_poly.score(X_df_test,Y_df_test)
+sig_score = svm_sig.score(X_df_test,Y_df_test)
 
 #Save the SVM as either (svm_rbf.sav) or (svm_poly.sav), (svm_linear.sav)
 pickle.dump(svm_rbf,open("svm_rbf.sav",'wb'))
