@@ -115,6 +115,18 @@ async function prepareContainer(container: Container): Promise<Container> {
         )
         .whenTargetNamed("SVM");
 
+    container
+        .bind<PythonSpawnService>(Component.PythonSpawnService)
+        .toConstantValue(
+            new PythonSpawnService(
+                `${__dirname}/../../` + pythonModels.ensemble,
+                [],
+                pythonModels.poolSize
+            )
+        )
+        .whenTargetNamed("Ensemble");
+
+
     console.log("Components Prepared!");
 
     return container;
