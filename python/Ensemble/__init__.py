@@ -3,6 +3,7 @@ import sys, json, numpy as np
 import pickle
 import pandas as pd
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import xgboost
 import pandas
 # get the input from Node Server through stdin
 
@@ -66,7 +67,36 @@ def parse_info(info):
     (posneg, compound) = calculate_senti(text)
     # print("compound:" + str(compound))
     # return text, user_id, screen_name, followers_count, favorites_count
-    return pd.Series([urban_sexist, oxford_sexist, followers_count, favorites_count, friends_count,sex_words_ratio, posneg, compound])
+
+    # xgboost = load_trained_SVM(os.path.dirname(os.path.abspath(__file__)) +"/model.sav")
+
+
+    # return pd.Series({
+    #     "urban_score": urban_sexist,
+    #     "oxford_score": oxford_sexist,
+    #     "follower_score": followers_count,
+    #     "favorite_score": favorites_count,
+    #     "friend_score": friends_count,
+    #     "sex_words_ratio" : sex_words_ratio,
+    #     "posneg": posneg,
+    #     "compound" : compound}
+    #     # 0: urban_sexist,
+    #     # 1: oxford_sexist,
+    #     # 2: followers_count,
+    #     # 3: favorites_count,
+    #     # 4: friends_count,
+    #     # 5: sex_words_ratio,
+    #     # 6: posneg,
+    #     # 7: compound}
+    # )
+    # return np.array([urban_sexist,oxford_sexist,followers_count,favorites_count,friends_count,sex_words_ratio,posneg,compound], dtype = np.float32)
+    # df = pd.Series([urban_sexist, oxford_sexist, followers_count, favorites_count, friends_count, sex_words_ratio, posneg,compound]).to_frame()
+    # df = pd.DataFrame(columns=["urban_score", "oxford_score", "follower_score", "favorite_score", "friend_score", "sex_words_ratio", "posneg", "compound"])
+    df = pd.DataFrame(columns=["f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7"])
+
+    df.loc[0] = [urban_sexist, oxford_sexist, followers_count, favorites_count, friends_count, sex_words_ratio, posneg, compound]
+    # df.columns = ["urban_score", "oxford_score", "follower_score", "favorite_score", "friend_score", "sex_words_ratio", "posneg", "compound"]
+    return df
 
 def load_trained_SVM(filename):
 
@@ -82,15 +112,20 @@ if __name__ == '__main__':
 
 
     # load SVM and wait for the Node.JS module input
-    txtSVM = load_trained_SVM(os.path.dirname(os.path.abspath(__file__)) +"/model.sav")
+    txtSVM = load_trained_SVM(os.path.dirname(os.path.abspath(__file__)) +"/model2.sav")
 
     while True:
         # print(
         #     txtSVM.predict_proba(parse_info(read_in()))
         # )
         k = parse_info(read_in())
+        # k = k["urban_score","oxford_score","follower_score","favorite_score","friend_score","sex_words_ratio","posneg","compound"]
+        # k.reshape(-1,1)
         # print(k)
-        prob_of_not_sexist = txtSVM.predict_proba(k.values.reshape(1,-1))[0][0] #
+        # prob_of_not_sexist = txtSVM.predict_proba(xgboost.DMatrix(data = k, feature_names= ["urban_score", "oxford_score", "follower_score", "favorite_score", "friend_score", "sex_words_ratio", "posneg", "compound"]))[0][0] #
+        # prob_of_not_sexist = txtSVM.predict_proba(xgboost.DMatrix(k.values))[0][0] #
+        prob_of_not_sexist = txtSVM.predict_proba(k.values.reshape(1, -1))[0][0]
+
         print(1-prob_of_not_sexist)
         sys.stdout.flush()
 

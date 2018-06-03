@@ -1,6 +1,5 @@
 from numpy import loadtxt
 from xgboost import XGBClassifier
-import xgboost
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import pandas as pd
@@ -49,42 +48,27 @@ Y_df = result_table[['label']]
 random_state_seed = 89 # produce random integer [0, 100]
 X_df_train, X_df_test, Y_df_train, Y_df_test = train_test_split(X_df, Y_df, test_size=0.2, random_state=random_state_seed)
 
-X_df_train.columns = ["f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7"]
-X_df_test.columns = ["f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7"]
-
-
 # split data into train and test sets
 
 test_size = 0.2
 
 # fit model no training data
 model = XGBClassifier()
-
-# X_df_train = xgboost.DMatrix(X_df_train.values)
-# Y_df_train = xgboost.DMatrix(Y_df_train.values)
-#
-# print("62")
-
 model.fit(X_df_train, Y_df_train)
-
-#Save the SVM as either (svm_xgboost.sav) or (svm_poly.sav), (svm_linear.sav)
-pickle.dump(model,open("model2.sav",'wb'))
-
 # make predictions for test data
 y_pred = model.predict(X_df_test)
 
 xgboost_score = model.score(X_df_test,Y_df_test)
 
-
-
-
+#Save the SVM as either (svm_xgboost.sav) or (svm_poly.sav), (svm_linear.sav)
+pickle.dump(model,open("model.sav",'wb'))
 
 
 # evaluate predictions
 
 xgboost_tn, xgboost_fp, xgboost_fn, xgboost_tp = confusion_matrix(Y_df_test, y_pred).ravel()
 
-with open("xgboost2.txt", "w") as f_xgboost:
+with open("xgboost.txt", "w") as f_xgboost:
     f_xgboost.write("accu: "+str(xgboost_score)+"\n")
     f_xgboost.write(str(xgboost_tn) +" " + str(xgboost_fp) + " " + str(xgboost_fn) + " " + str(xgboost_tp)+"\n")
     tpr = float(xgboost_tp / (xgboost_tp + xgboost_fn))
