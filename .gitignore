@@ -67,3 +67,4 @@ typings/
 res/
 config/
 python/SVM/TextSVM.py
+.DS_Store*
