@@ -2,5 +2,6 @@
 export default interface PythonModelFiles {
     svm: string;
     nn: string;
-    poolSize: number
+    ensemble: string;
+    poolSize: number;
 }

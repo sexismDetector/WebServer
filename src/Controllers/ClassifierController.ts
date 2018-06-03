@@ -20,6 +20,7 @@ export class ClassifierController implements Controller {
 
     private neuralNetwork: PythonSpawnService;
     private supportVectorMachine: PythonSpawnService;
+    private ensemble: PythonSpawnService;
     private twitterService: ITwitterDataService;
     private cleanService: ITweetCleanService;
     private readonly maxValues: any;
@@ -27,11 +28,13 @@ export class ClassifierController implements Controller {
     public constructor(
         @inject(Component.PythonSpawnService) @named("NN") neuralNetwork: PythonSpawnService,
         @inject(Component.PythonSpawnService) @named("SVM") supportVectorMachine: PythonSpawnService,
+        @inject(Component.PythonSpawnService) @named("Ensemble") ensemble: PythonSpawnService,
         @inject(Component.TweetCleanService) cleanService: ITweetCleanService,
         @inject(Component.TwitterDataService) twitterService: ITwitterDataService
     ) {
         this.neuralNetwork = neuralNetwork;
         this.supportVectorMachine = supportVectorMachine;
+        this.ensemble = ensemble;
         this.cleanService = cleanService;
         this.twitterService = twitterService;
         this.maxValues = Filesystem.readJSONSync(__dirname + "/../../res/maxValues.json");
@@ -50,7 +53,7 @@ export class ClassifierController implements Controller {
     ): Promise<string> {
         const args = await this.makeArgs(body);
         args.forEach(arg => console.log(arg));
-        const nnResponsePromise = this.neuralNetwork.calculate(args);
+        const nnResponsePromise = this.ensemble.calculate(args);
         const result = await nnResponsePromise;
         return result.toString();
     }
@@ -86,7 +89,6 @@ export class ClassifierController implements Controller {
             }
         }
         console.log(user);
-        // TODO: Normalize maybe?
         return [comment, user].map(obj => JSON.stringify(obj));
     }
     
