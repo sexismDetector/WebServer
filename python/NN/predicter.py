@@ -33,37 +33,53 @@ def Tokenize_New_Instance(new_string, text_length):
     return tokenized_text
 
 
+def parse_user_json(demographics,text):
+
+    user_id = demographics["user_id"]
+    screen_name = demographics["screen_name"]
+    followers_count = demographics["followers_count"]
+    favorites_count = demographics["favorites_count"]
+    friends_count = demographics["friends_count"]
+    urban_sexist = demographics["urban_score"]
+    oxford_sexist = demographics["oxford_score"]
+    sex_words_ratio = demographics["sex_words_ratio"]
+
+    sentiment = SentimentIntensityAnalyzer(text)
+
+    t_neg = sentiment['neg']
+
+    t_pos = sentiment['pos']
+
+    tmp =  [urban_sexist,oxford_sexist, followers_count, favorites_count, friends_count,    sex_words_ratio, t_neg, t_pos ]
+
+    return np.array([tmp])
+
+
+
+
+
+
 model = load_model(os.path.dirname(os.path.abspath(__file__)) + '/../../res/sexism_classifier.h5')
 
 while True:
     tweet = sys.stdin.readline()
     user = sys.stdin.readline()
     first_json = json.loads(tweet)
-    #second_json = json.loads(user) 
+    second_json = json.loads(user) 
     raw_text = first_json["text"]
 
-    sentiment_of_text = get_sentiment_scores(raw_text)
-
-    text_negativity = sentiment_of_text['neg']
-
-    text_positivity = sentiment_of_text['pos']
-
-    if text_positivity == 0.0 and text_negativity == 0.0 :
-        text_positivity = 0.15 #the idea is that if its neutral then is less sexist
+    user_info = parse_user_json(second_json,raw_text )
 
 
-    input_prediction = model.predict( Tokenize_New_Instance(raw_text, 50) )
 
-    text_score_nn = input_prediction[0][0]
+    tokenized_input = np.array([Tokenize_New_Instance(raw_text, 50)])
 
-    probability_score = text_score_nn + text_negativity - text_positivity  
 
-    if probability_score > 1.0 :
-        probability_score = 1.0
+    t_p = model.predict( [tokenized_input,user_info ]  )
+    probability_score = t_p[0]
 
-    if probability_score < 0 :
-        probability_score =  0
+ 
 
-    print(probability_score)
+    print(probability_score[0])
 
     sys.stdout.flush()
