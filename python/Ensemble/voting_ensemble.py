@@ -9,10 +9,6 @@ from sklearn.metrics import confusion_matrix
 import pickle
 import os
 
-# from python.NN import nn_model
-
-
-
 def load_trained_SVM(filename):
 
     #load the trained SVM from pickle here.

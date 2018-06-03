@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 from sklearn.svm import SVC
 from sklearn.model_selection import *
-from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 import pickle
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
