@@ -59,7 +59,7 @@ def parse_user_json(demographics,text):
 
 
 
-model = load_model(os.path.dirname(os.path.abspath(__file__)) + '/../../res/sexism_classifier.h5')
+model = load_model(os.path.dirname(os.path.abspath(__file__)) + '/sexism_classifier.h5')
 
 while True:
     tweet = sys.stdin.readline()
